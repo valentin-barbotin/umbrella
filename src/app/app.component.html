@@ -1,9 +1,13 @@
 <div class="inset-0 bg-black text-white p-5">
     <div class="justify-between justify-arround flex mx-7 place-items-center">
         <div class="flex place-items-center">
-            <img src="/assets/images/logopa.png" width="50px" height="50px">
+            <a href="/"><img src="/assets/images/logopa.png" width="50px" height="50px"></a>
             <h3 style="margin-bottom: 0%;"><a class="mx-8 my-0 py-3 border-r-2"></a></h3>
-            <a href="/files">Mes Fichiers</a>
+            <div>
+                <a class="mr-2" href="/files">Mes Fichiers</a>
+                <a class="mx-2" href="/login">Login</a>
+                <a class="mx-2" href="/register">Register</a>
+            </div>
         </div>
 
         <div class="flex">
@@ -16,4 +20,5 @@
         </div>
     </div>
 </div>
+
 <router-outlet></router-outlet>
