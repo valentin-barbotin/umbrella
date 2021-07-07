@@ -5,7 +5,6 @@ import { FilesComponent } from './files/files.component';
 import { LoginComponent } from './login/login.component';
 
 const routes: Routes = [
-  { path: '', component: AppComponent },
   { path: 'login', component: LoginComponent },
 ];
 
