@@ -13,9 +13,9 @@ export class CrudService {
   token = "";
 
   getHeaders(options?: Object) {
-    const headers:any = {
+    const headers: any = {
       // 'Content-Type': 'application/json'
-      responseType: 'json' as const,
+      // responseType: 'text' as const,
     };
 
     if (this.token != "") {
@@ -28,33 +28,33 @@ export class CrudService {
     return headers
   };
   
-  GET(endpoint: string) {
-    return this.http.get<any[]>(
-      environment.api+endpoint,
-      {headers: new HttpHeaders(this.getHeaders())}
-      );
-  }
+  // GET(endpoint: string) {
+  //   return this.http.get(
+  //     environment.api+endpoint,
+  //     {headers: new HttpHeaders(this.getHeaders())}
+  //     );
+  // }
 
-  POST(endpoint: string, data: Object, options?: Object) {
+  // POST(endpoint: string, data: Object, options?: Object) {
 
-    return this.http.post<any[]>(
-      environment.api+endpoint,
-      data,
-      {
-        headers: new HttpHeaders(this.getHeaders(options)),
-        reportProgress: true,
-        withCredentials: true,
-        // observe: 'events'
-      }
-      );
-  }
+  //   return this.http.post(
+  //     environment.api+endpoint,
+  //     data,
+  //     {
+  //       headers: new HttpHeaders(this.getHeaders(options)),
+  //       reportProgress: true,
+  //       withCredentials: true,
+  //       // observe: 'events'
+  //     }
+  //     );
+  // }
 
-  DELETE(endpoint: string) {
-    return this.http.delete<any[]>(
-      environment.api+endpoint,
-      {headers: new HttpHeaders(this.getHeaders())}
-      );
-  }
+  // DELETE(endpoint: string) {
+  //   return this.http.delete<any[]>(
+  //     environment.api+endpoint,
+  //     {headers: new HttpHeaders(this.getHeaders())}
+  //     );
+  // }
   
   constructor(
     public http: HttpClient

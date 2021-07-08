@@ -57,6 +57,10 @@ import { MatTableModule } from '@angular/material/table';
 import { HttpClient } from '@angular/common/http';
 
 import { FilesComponent } from './files/files.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { LogoutComponent } from './logout/logout.component';
+
+import { CookieService } from 'ngx-cookie-service';
 
 // export function HttpLoaderFactory(http: HttpClient) {
 //   return new TranslateHttpLoader(http);
@@ -69,7 +73,9 @@ import { FilesComponent } from './files/files.component';
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    FilesComponent
+    FilesComponent,
+    DashboardComponent,
+    LogoutComponent,
   ],
   imports: [
     // TranslateModule.forRoot({
@@ -123,7 +129,7 @@ import { FilesComponent } from './files/files.component';
     MatSortModule,
     MatTableModule
   ],
-  providers: [],
+  providers: [CookieService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
