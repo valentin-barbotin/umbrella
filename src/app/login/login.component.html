@@ -1,4 +1,4 @@
-<div class="w-full max-w-xs">
+<div class="w-full max-w-xs mx-auto">
   <form
     [formGroup]="loginForm"
     class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
@@ -6,9 +6,6 @@
     <mat-form-field appearance="standard">
       <mat-label>Login</mat-label>
       <input formControlName="login" matInput type="text"/>
-      <!-- <button (click)="clearLogin()" *ngIf="login?.value" matSuffix mat-icon-button type="button">
-        <mat-icon>close</mat-icon>
-      </button> -->
       <mat-error *ngIf="login?.errors?.required">Login required</mat-error>
     </mat-form-field>
 
@@ -18,19 +15,16 @@
       <button (click)="hide1 = !hide1" matSuffix mat-icon-button type="button">
         <mat-icon>{{hide1 ? 'visibility_off' : 'visibility'}}</mat-icon>
       </button>
-      <!-- <button (click)="clearPassword()" *ngIf="password?.value" matSuffix mat-icon-button type="button">
-        <mat-icon>close</mat-icon>
-      </button> -->
       <mat-error *ngIf="password?.errors?.required"
         >Password required</mat-error
       >
     </mat-form-field>
-    <br />
     <button
       mat-raised-button
       type="button"
       [disabled]="loginForm.invalid"
       (click)="auth()"
+      class="mt-50 border"
     >
       Login
     </button>

@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { CrudService } from '../services/crud.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import { User } from '../user';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -28,19 +32,39 @@ export class LoginComponent implements OnInit {
     for (const input in this.loginForm.controls) {
       form.append(input, this.loginForm.get(input)?.value);
     }
-
-    this.CrudService.POST('users/login', form).subscribe(
-      (response) => {
-        console.log(response);
-      },
-      (error) => {
-        console.log(error);
+    this.http.post<User>(
+      `${environment.api}users/login`,
+      form,
+      {
+        headers: new HttpHeaders(this.CrudService.getHeaders()),
+        reportProgress: true,
+        withCredentials: true,
       }
-    );
-    console.log('test')
+      ).subscribe(
+        (response) => {
+          console.log(response)
+          if (response) {
+            localStorage.setItem('user', JSON.stringify(response));
+            this.Router.navigate(['/'])
+          }
+        },
+        (error) => {
+          console.log(error)
+        }
+      )
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const exist = localStorage.getItem('user')
+    if (exist) {
+      alert('Already connected')
+      this.Router.navigate(['/'])
+    }
+  }
 
-  constructor(private CrudService: CrudService) {}
+  constructor(
+    private CrudService: CrudService,
+    private http: HttpClient,
+    private Router: Router,
+  ) {}
 }
