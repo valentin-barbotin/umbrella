@@ -22,12 +22,12 @@
     <button
       mat-raised-button
       type="button"
+      [@connect]="state"
       [disabled]="loginForm.invalid"
       (click)="auth()"
       class="mt-50 border"
     >
-      Login
+      {{ loginForm.invalid ? 'Waiting' : authButton }}
     </button>
-    <!-- <button type="button" (click)="check()" >check = {{ loginForm.status }}</button> -->
   </form>
 </div>

@@ -1,26 +1,30 @@
-<div class="inset-0 bg-black text-white p-10">
-    <div class="justify-between justify-arround flex mx-7">
-        <div class="flex  mx-44">
-            <div>
-                <a class="mr-2" href="/files">Accueil /</a>
-            </div>
-        </div>
+<input multiple (change)="uploadFile(upload)" hidden #upload type="file">
 
-        <div class="flex">
-            <div>
-                <a><mat-icon class="mx-8">create_new_folder</mat-icon></a>
-            </div>
-            <div>
-                <a><mat-icon>post_add</mat-icon></a>
-            </div>
-        </div>
+<button (click)="upload.click()" mat-icon-button>
+    <mat-icon>upload_file</mat-icon>
+</button>
 
-
-    </div>
-</div>
-
-<div class="flex">
-    <div class="flex-initial bg-black h-screen p-24">
-
-    </div>
-</div>
+<table class="table-fixed border-collapse border border-green-800 w-11/12">
+  <thead>
+    <tr>
+      <th class="p-1 pl-0 border bg-green-600 text-left w-5"></th>
+      <th class="p-1 pl-0 border bg-green-600 text-left">Nom</th>
+      <th class="p-1 pl-0 border bg-green-600 text-left">Taille</th>
+      <th class="p-1 pl-0 border bg-green-600 text-left">Type</th>
+      <th class="p-1 pl-0 border bg-green-600 text-left">Date d'ajout</th>
+      <th class="p-1 pl-0 border bg-green-600 text-left w-5"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let file of files" id="{{ file.name }}"
+    (click)="pickFile($event)"
+    [ngClass]="{'bg-gray-500': isItPicked( file.name ), 'hover:bg-gray-400': !isItPicked( file.name )}">
+      <td class="p-1">..</td>
+      <td class="p-1">{{ file.name }}</td>
+      <td class="p-1">{{ file.size | bytesConverter: 'MB' }}</td>
+      <td class="p-1">{{ file.type }}</td>
+      <td class="p-1">{{ file.createdOn | date: 'short' }}</td>
+      <td class="p-1">...</td>
+    </tr>
+  </tbody>
+</table>

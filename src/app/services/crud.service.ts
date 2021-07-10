@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
 })
 export class CrudService {
   isAuth = false;
-  token = "";
+  token = "af88bcc96e7efcf7297a6f9207893c6fc3dcbd56";
 
   getHeaders(options?: Object) {
     const headers: any = {
@@ -18,43 +18,10 @@ export class CrudService {
       // responseType: 'text' as const,
     };
 
-    if (this.token != "") {
-      console.log("ajout token header")
-      headers['Authorization'] = `Bearer ${this.token}`;
-    } else {
-      console.log("pas de token")
-    }
+    headers['Authorization'] = `${this.token}`;
 
     return headers
   };
-  
-  // GET(endpoint: string) {
-  //   return this.http.get(
-  //     environment.api+endpoint,
-  //     {headers: new HttpHeaders(this.getHeaders())}
-  //     );
-  // }
-
-  // POST(endpoint: string, data: Object, options?: Object) {
-
-  //   return this.http.post(
-  //     environment.api+endpoint,
-  //     data,
-  //     {
-  //       headers: new HttpHeaders(this.getHeaders(options)),
-  //       reportProgress: true,
-  //       withCredentials: true,
-  //       // observe: 'events'
-  //     }
-  //     );
-  // }
-
-  // DELETE(endpoint: string) {
-  //   return this.http.delete<any[]>(
-  //     environment.api+endpoint,
-  //     {headers: new HttpHeaders(this.getHeaders())}
-  //     );
-  // }
   
   constructor(
     public http: HttpClient

@@ -61,6 +61,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { LogoutComponent } from './logout/logout.component';
 
 import { CookieService } from 'ngx-cookie-service';
+import { BytesConverterPipe } from './bytes-converter.pipe';
 
 // export function HttpLoaderFactory(http: HttpClient) {
 //   return new TranslateHttpLoader(http);
@@ -76,6 +77,7 @@ import { CookieService } from 'ngx-cookie-service';
     FilesComponent,
     DashboardComponent,
     LogoutComponent,
+    BytesConverterPipe,
   ],
   imports: [
     // TranslateModule.forRoot({
