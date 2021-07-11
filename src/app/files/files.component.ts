@@ -3,6 +3,7 @@ import { CrudService } from '../services/crud.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { File, IData } from '../file';
+import { CookieService } from 'ngx-cookie-service';
 @Component({
   selector: 'app-files',
   templateUrl: './files.component.html',
@@ -18,6 +19,30 @@ export class FilesComponent implements OnInit {
 
   isItPicked(id: string) {
     return this.pickedElements?.has(id)
+  }
+
+  download(file?: string) {
+
+    if (file) {
+      window.open(`${environment.api}files/download/${file}`, '_self');
+      return
+    }
+
+    if (!this.pickedElements) return
+    
+    if (this.pickedElements.size == 1) {
+      window.open(`${environment.api}files/download/${this.pickedElements.values().next().value}`, '_self');
+      return
+    }
+    
+    this.cookieService.set('tmpDownload',JSON.stringify([...this.pickedElements]))
+    window.open(`${environment.api}files/download`, '_self');
+
+  }
+
+  async downloadSelection() {
+    if (!this.pickedElements) return
+    this.download()
   }
 
   pickFile(event: MouseEvent) {
@@ -127,6 +152,7 @@ export class FilesComponent implements OnInit {
   constructor(
     private CrudService: CrudService,
     private http: HttpClient,
+    private cookieService: CookieService,
   ) {}
 
   ngOnInit(): void {

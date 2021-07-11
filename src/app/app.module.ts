@@ -62,6 +62,7 @@ import { LogoutComponent } from './logout/logout.component';
 
 import { CookieService } from 'ngx-cookie-service';
 import { BytesConverterPipe } from './bytes-converter.pipe';
+import { MimeNamePipe } from './mime-name.pipe';
 
 // export function HttpLoaderFactory(http: HttpClient) {
 //   return new TranslateHttpLoader(http);
@@ -78,6 +79,7 @@ import { BytesConverterPipe } from './bytes-converter.pipe';
     DashboardComponent,
     LogoutComponent,
     BytesConverterPipe,
+    MimeNamePipe,
   ],
   imports: [
     // TranslateModule.forRoot({
