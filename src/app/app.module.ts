@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -63,6 +63,7 @@ import { LogoutComponent } from './logout/logout.component';
 import { CookieService } from 'ngx-cookie-service';
 import { BytesConverterPipe } from './bytes-converter.pipe';
 import { MimeNamePipe } from './mime-name.pipe';
+import { httpInterceptorProviders } from './http-interceptors';
 
 // export function HttpLoaderFactory(http: HttpClient) {
 //   return new TranslateHttpLoader(http);
@@ -133,7 +134,10 @@ import { MimeNamePipe } from './mime-name.pipe';
     MatSortModule,
     MatTableModule
   ],
-  providers: [CookieService],
+  providers: [
+    CookieService,
+    httpInterceptorProviders
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

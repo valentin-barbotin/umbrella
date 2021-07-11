@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { CrudService } from '../services/crud.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { File, IData } from '../file';
 import { CookieService } from 'ngx-cookie-service';
+
 @Component({
   selector: 'app-files',
   templateUrl: './files.component.html',
@@ -16,27 +18,85 @@ export class FilesComponent implements OnInit {
   hoveredElement?: string;
 
   pickedElements?: Set<any>
+  pickedElementsTotalSize : number = 0
 
   isItPicked(id: string) {
     return this.pickedElements?.has(id)
   }
 
+  shareFile() {
+    navigator.clipboard.writeText("test")
+  }
+
+  responseToBlob(response: Blob, file: string) {
+    let dataType = response.type;
+    let binaryData = [];
+    binaryData.push(response);
+    let downloadLink = document.createElement('a');
+    downloadLink.href = window.URL.createObjectURL(new Blob(binaryData, {type: dataType}));
+    if (file)
+        downloadLink.setAttribute('download', file);
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+  }
+
   download(file?: string) {
 
     if (file) {
-      window.open(`${environment.api}files/download/${file}`, '_self');
+      this.http.get(
+        `${environment.api}files/download/${file}`,
+        {
+          responseType: 'blob',
+          reportProgress: true,
+          withCredentials: true,
+        }
+        ).subscribe(
+          (response) => {
+            this.responseToBlob(response, file)
+          },
+          (error: HttpErrorResponse) => {}
+        )
       return
     }
 
     if (!this.pickedElements) return
     
     if (this.pickedElements.size == 1) {
-      window.open(`${environment.api}files/download/${this.pickedElements.values().next().value}`, '_self');
+      const file = this.pickedElements.values().next().value;
+      this.http.get(
+        `${environment.api}files/download/${file}`,
+        {
+          responseType: 'blob',
+          reportProgress: true,
+          withCredentials: true,
+        }
+        ).subscribe(
+          (response) => {
+            this.responseToBlob(response, file)
+          },
+          (error: HttpErrorResponse) => {}
+        )
       return
     }
     
     this.cookieService.set('tmpDownload',JSON.stringify([...this.pickedElements]))
-    window.open(`${environment.api}files/download`, '_self');
+
+    this.http.get(
+      `${environment.api}files/download`,
+      {
+        responseType: 'blob',
+        reportProgress: true,
+        withCredentials: true,
+      }
+      ).subscribe(
+        (response) => {
+          console.log(response);
+          
+          this.responseToBlob(response, 'randomName')
+        },
+        (error: HttpErrorResponse) => {}
+      )
+
 
   }
 
@@ -54,31 +114,38 @@ export class FilesComponent implements OnInit {
     if (!elem) return
 
     const id = elem.id
+    const size = parseInt( elem.attributes.getNamedItem('filesize')?.value || "0" )
     const ctrlKey = event.ctrlKey
     
     if (!this.pickedElements) {
       this.pickedElements = new Set()
+      this.pickedElementsTotalSize = 0
     } else {
 
       if (!ctrlKey) {
+        this.pickedElementsTotalSize = 0
         this.pickedElements.clear()
       }
 
     }
 
     if (this.pickedElements.has(id)) {
+      this.pickedElementsTotalSize -= size
       this.pickedElements.delete(id)
     } else {
+      this.pickedElementsTotalSize += size
       this.pickedElements.add(id)
     }
 
   }
+  
 
   getFiles() {
+    
     this.http.get<IData[]>(
       `${environment.api}files/list`,
       {
-        headers: new HttpHeaders(this.CrudService.getHeaders()),
+        // headers: new HttpHeaders(this.CrudService.getHeaders()),
         reportProgress: true,
         withCredentials: true,
       }
@@ -86,7 +153,7 @@ export class FilesComponent implements OnInit {
         (response) => {
           this.files = response
         },
-        (error) => {
+        (error: HttpErrorResponse) => {
           console.log('Cannot retrieve files')
         }
       )
@@ -114,7 +181,7 @@ export class FilesComponent implements OnInit {
       `${environment.api}files/upload/true/true`,
       form,
       {
-        headers: new HttpHeaders(this.CrudService.getHeaders()),
+        // headers: new HttpHeaders(this.CrudService.getHeaders()),
         reportProgress: true,
         withCredentials: true,
       }
@@ -150,7 +217,6 @@ export class FilesComponent implements OnInit {
   }
 
   constructor(
-    private CrudService: CrudService,
     private http: HttpClient,
     private cookieService: CookieService,
   ) {}

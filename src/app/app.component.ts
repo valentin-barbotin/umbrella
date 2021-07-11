@@ -1,4 +1,8 @@
 import { Component, Input } from '@angular/core';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { environment } from '../environments/environment';
+import { CrudService } from './services/crud.service';
+
 
 @Component({
   selector: 'app-root',
@@ -15,10 +19,9 @@ export class AppComponent {
 
   }
 
-  constructor() {
-    console.log(123)
-
-    
-  }
+  constructor(
+    private http: HttpClient,
+    private CrudService: CrudService,
+  ) {}
 
 }

@@ -32,7 +32,7 @@ export class LogoutComponent implements OnInit {
     this.http.get(
       `${environment.api}users/logout`,
       {
-        headers: new HttpHeaders(this.CrudService.getHeaders()),
+        // headers: new HttpHeaders(this.CrudService.getHeaders()),
         reportProgress: true,
         withCredentials: true,
       }

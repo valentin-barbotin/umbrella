@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { User } from '../user';
 import { UserService } from '../services/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,11 +17,16 @@ export class DashboardComponent implements OnInit {
   }
 
   constructor(
-    private UserService: UserService
-  ) {}
+    private UserService: UserService,
+    private Router: Router,
+  ) {
+    const user = localStorage.getItem('user');
+    if (!user) {
+      this.Router.navigate(['/'])
+    }
+  }
 
   ngOnInit(): void {
-    console.log(this.User)
   }
 
 }

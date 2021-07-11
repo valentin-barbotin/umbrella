@@ -78,7 +78,7 @@ export class LoginComponent implements OnInit {
       `${environment.api}users/login`,
       form,
       {
-        headers: new HttpHeaders(this.CrudService.getHeaders()),
+        // headers: new HttpHeaders(this.CrudService.getHeaders()),
         reportProgress: true,
         withCredentials: true,
       }
