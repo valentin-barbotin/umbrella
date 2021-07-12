@@ -58,6 +58,8 @@ export class LoginComponent implements OnInit {
 
   auth() {
 
+    if (this.state == 'connected') return
+
     const form = new FormData();
     for (const input in this.loginForm.controls) {
       form.append(input, this.loginForm.get(input)?.value);

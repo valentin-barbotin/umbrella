@@ -6,16 +6,21 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class MimeNamePipe implements PipeTransform {
 
   transform(value: string, ...args: any[]): unknown {
-    switch (value) {
-      case 'application/x-msdownload':
-        value = 'Executable file'
-        break;
-    
-      default:
-        // value = 'Unknown'
-        break;
+    if (args.length != 1) return value
+
+    const dict: { [k: string]: string} = {
+      'application/x-msdownload': 'Executable file',
+      'image/jpeg': 'Image JPEG'
     }
-    return value;
+
+    value = dict[value]
+    if (value) {
+      return value
+    }
+    
+    const tmp = args.shift().split('.').pop() as string
+    return `${tmp.toUpperCase() ?? 'Unknown'} file`
+
   }
 
 }

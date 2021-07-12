@@ -28,6 +28,29 @@ export class FilesComponent implements OnInit {
     navigator.clipboard.writeText("test")
   }
 
+  deleteFiles() {
+    if (!this.pickedElements) return
+    const res = confirm(`Do you really want to delete ${this.pickedElements.size} files. This action is irreversible`)
+
+    if (!res) return
+
+    this.cookieService.set('fileselection',JSON.stringify([...this.pickedElements]))
+
+    this.http.delete(
+      `${environment.api}files/delete`,
+      {
+        reportProgress: true,
+        withCredentials: true,
+      }
+      ).subscribe(
+        (response) => {
+          this.getFiles()
+        },
+        (error: HttpErrorResponse) => {
+        }
+      )
+  }
+
   responseToBlob(response: Blob, file: string) {
     let dataType = response.type;
     let binaryData = [];
@@ -79,7 +102,7 @@ export class FilesComponent implements OnInit {
       return
     }
     
-    this.cookieService.set('tmpDownload',JSON.stringify([...this.pickedElements]))
+    this.cookieService.set('fileselection',JSON.stringify([...this.pickedElements]))
 
     this.http.get(
       `${environment.api}files/download`,
@@ -90,7 +113,6 @@ export class FilesComponent implements OnInit {
       }
       ).subscribe(
         (response) => {
-          console.log(response);
           
           this.responseToBlob(response, 'randomName')
         },
@@ -187,11 +209,9 @@ export class FilesComponent implements OnInit {
       }
     ).subscribe(
       (response) => {
-        console.log(response)
         this.getFiles()
       },
       (error) => {
-        console.log(error)
       }
     )
 

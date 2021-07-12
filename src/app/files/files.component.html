@@ -16,7 +16,6 @@
       <th class="p-1 pl-0 border bg-green-600 text-left">Taille</th>
       <th class="p-1 pl-0 border bg-green-600 text-left">Type</th>
       <th class="p-1 pl-0 border bg-green-600 text-left">Date d'ajout</th>
-      <th class="p-1 pl-0 border bg-green-600 text-left w-5"></th>
     </tr>
   </thead>
   <tbody>
@@ -34,9 +33,12 @@
       <td class="p-1">..</td>
       <td class="p-1">{{ file.name }}</td>
       <td class="p-1">{{ file.size | bytesConverter: "MB" }}</td>
-      <td class="p-1">{{ file.type | mimeName }}</td>
-      <td class="p-1">{{ file.createdOn | date: "MM/dd/yy HH:mm" }}</td>
-      <td class="p-1">...</td>
+      <td class="p-1">{{ file.type | mimeName: file.name }}</td>
+      <td class="p-1">{{ file.createdOn | date: "MM/dd/yy HH:mm" }}
+        <span class="ml-7">
+          <mat-icon>more_horiz</mat-icon>
+        </span>
+      </td>
     </tr>
   </tbody>
 </table>
@@ -52,7 +54,7 @@
     <button (click)="downloadSelection()" mat-icon-button>
       <mat-icon>file_download</mat-icon>
     </button>
-    <button mat-icon-button>
+    <button (click)="deleteFiles()" mat-icon-button>
       <mat-icon>delete_outline</mat-icon>
     </button>
     <button (click)="shareFile()" mat-icon-button>
