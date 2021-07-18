@@ -6,7 +6,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { LoginComponent } from './login/login.component';
+import { LoginComponent, resetPassword } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 
 
@@ -64,6 +64,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { BytesConverterPipe } from './bytes-converter.pipe';
 import { MimeNamePipe } from './mime-name.pipe';
 import { httpInterceptorProviders } from './http-interceptors';
+import { GraphQLModule } from './graphql.module';
 
 // export function HttpLoaderFactory(http: HttpClient) {
 //   return new TranslateHttpLoader(http);
@@ -81,6 +82,7 @@ import { httpInterceptorProviders } from './http-interceptors';
     LogoutComponent,
     BytesConverterPipe,
     MimeNamePipe,
+    resetPassword
   ],
   imports: [
     // TranslateModule.forRoot({
@@ -132,7 +134,8 @@ import { httpInterceptorProviders } from './http-interceptors';
     MatTooltipModule,
     MatPaginatorModule,
     MatSortModule,
-    MatTableModule
+    MatTableModule,
+    GraphQLModule
   ],
   providers: [
     CookieService,

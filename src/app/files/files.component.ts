@@ -1,24 +1,60 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { CrudService } from '../services/crud.service';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { File, IData } from '../file';
 import { CookieService } from 'ngx-cookie-service';
+import {Apollo, gql, QueryRef} from 'apollo-angular';
+import { HttpLink } from 'apollo-angular/http';
+import { ProgressBarMode } from '@angular/material/progress-bar';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { Subscription } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-files',
   templateUrl: './files.component.html',
   styleUrls: ['./files.component.sass']
 })
-export class FilesComponent implements OnInit {
+export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
 
+  @ViewChild(MatSort) sort!: MatSort;
+
+  // dataSource!: MatTableDataSource<IData>;
+  dataSource = new MatTableDataSource([]);
   files: IData[] = []
+  sizeLimit: number = 1e10;
+  sizeTotal: number = 0;
+  loading: boolean = false;
 
   hoveredElement?: string;
 
-  pickedElements?: Set<any>
+  pickedElements: Set<string> = new Set()
   pickedElementsTotalSize : number = 0
+
+  stateUploading: ProgressBarMode = 'indeterminate'
+  stateFixed: ProgressBarMode = 'determinate'
+  stateProgress = 'determinate';
+
+  displayedColumns = ['name','size','type','createdOn']
+
+  filesQuery?: QueryRef<any>
+  querySubscription?: Subscription;
+
+  ngAfterViewInit() {
+    if (!this.dataSource) return
+    this.dataSource.sort = this.sort;
+  }
+
+  getProgressState() {
+    return this.stateProgress ? this.stateUploading : this.stateFixed
+  }
+
+  calcUsedStorage() {
+    return (this.sizeTotal / this.sizeLimit) * 100
+  }
 
   isItPicked(id: string) {
     return this.pickedElements?.has(id)
@@ -28,9 +64,19 @@ export class FilesComponent implements OnInit {
     navigator.clipboard.writeText("test")
   }
 
+  createFolder() {
+
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
   deleteFiles() {
     if (!this.pickedElements) return
-    const res = confirm(`Do you really want to delete ${this.pickedElements.size} files. This action is irreversible`)
+    const amount = this.pickedElements.size
+    const res = confirm(`Do you really want to delete ${amount} files. This action is irreversible`)
 
     if (!res) return
 
@@ -44,6 +90,11 @@ export class FilesComponent implements OnInit {
       }
       ).subscribe(
         (response) => {
+
+          this.snackBar.open(`${amount} files have been deleted`, 'Ok', {
+            duration: 10000
+          });
+
           this.getFiles()
         },
         (error: HttpErrorResponse) => {
@@ -127,29 +178,30 @@ export class FilesComponent implements OnInit {
     this.download()
   }
 
-  pickFile(event: MouseEvent) {
-    let elem: HTMLElement | null = event.target as HTMLElement
+  pickFile(event: MouseEvent, file: IData) {
+    // let elem: HTMLElement | null = event.target as HTMLElement
 
-    if (elem.nodeName == 'TD') {
-      elem = elem.parentElement 
-    }
-    if (!elem) return
+    // if (elem.nodeName == 'TD') {
+    //   elem = elem.parentElement 
+    // }
+    
+    // if (!elem) return
 
-    const id = elem.id
-    const size = parseInt( elem.attributes.getNamedItem('filesize')?.value || "0" )
+    const id = file.name
+    const size = file.size
     const ctrlKey = event.ctrlKey
     
-    if (!this.pickedElements) {
-      this.pickedElements = new Set()
-      this.pickedElementsTotalSize = 0
-    } else {
+    // if (!this.pickedElements) {
+      // this.pickedElements = new Set()
+      // this.pickedElementsTotalSize = 0
+    // } else {
 
       if (!ctrlKey) {
         this.pickedElementsTotalSize = 0
         this.pickedElements.clear()
       }
 
-    }
+    // }
 
     if (this.pickedElements.has(id)) {
       this.pickedElementsTotalSize -= size
@@ -158,11 +210,22 @@ export class FilesComponent implements OnInit {
       this.pickedElementsTotalSize += size
       this.pickedElements.add(id)
     }
-
+    
   }
-  
 
   getFiles() {
+
+    if (!this.filesQuery) return
+    this.pickedElements?.clear()
+    this.pickedElementsTotalSize = 0
+    this.stateProgress = 'query'
+    this.filesQuery.refetch().then(
+      () => {
+        this.stateProgress = 'determinate'
+      }
+    )
+
+    return
     
     this.http.get<IData[]>(
       `${environment.api}files/list`,
@@ -173,6 +236,8 @@ export class FilesComponent implements OnInit {
       }
       ).subscribe(
         (response) => {
+          this.pickedElementsTotalSize = 0
+          this.pickedElements?.clear()
           this.files = response
         },
         (error: HttpErrorResponse) => {
@@ -183,7 +248,10 @@ export class FilesComponent implements OnInit {
 
   uploadFile(elem: HTMLInputElement) {
     const files = elem.files;
+    console.log(files);
+    
     if (!files) return
+    console.log(files);
 
     let form = new FormData();
 
@@ -192,12 +260,36 @@ export class FilesComponent implements OnInit {
       const file = files.item(i);
       if (!file) return
       if (this.checkFile(file)) {
-        form.append('file' + i, file)
-        ++amount
+
+        const fileExists = this.files.filter( x => 
+          x.name == file.name
+        )
+
+        let replace = true
+        if (fileExists.length > 0) {
+          console.log('ask');
+
+          if (!confirm(`${file.name} is already in this folder, do you want to replace it ?`)) {
+            replace = false
+            console.log('dont replace');
+          }
+        }
+
+        if (replace) {
+          console.log('append');
+          
+          form.append('file' + i, file)
+          ++amount
+        }
+        
       }
     }
-
+    console.log('amount = ' + amount);
+    
+    elem.value = ''
     if (amount == 0) return
+
+    this.stateProgress = 'indeterminate'
 
     this.http.post(
       `${environment.api}files/upload/true/true`,
@@ -209,9 +301,16 @@ export class FilesComponent implements OnInit {
       }
     ).subscribe(
       (response) => {
+
+        this.snackBar.open(`${amount} files have been uploaded`, 'Ok', {
+          duration: 10000
+        });
+
         this.getFiles()
       },
       (error) => {
+        console.log(error);
+        
       }
     )
 
@@ -239,10 +338,55 @@ export class FilesComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private cookieService: CookieService,
+    private apollo: Apollo,
+    private httpLink: HttpLink,
+    private snackBar: MatSnackBar,
   ) {}
 
+  ngOnDestroy() {
+    if (!this.querySubscription) return
+    this.querySubscription.unsubscribe();
+  }
+
   ngOnInit(): void {
-    this.getFiles()
+    // this.getFiles()
+
+    this.loading = true
+    this.stateProgress = 'query'
+
+    this.filesQuery = this.apollo.watchQuery({
+      query: gql`
+      {
+        files {
+            createdOn
+            name
+            shared
+            type
+            lastModified
+            size
+            crypted
+            compressed
+        }
+      }
+      `,
+    })
+    
+    this.querySubscription = this.filesQuery
+    .valueChanges
+    .subscribe((result: any) => {
+      this.sizeTotal = 0
+      if (result.data) {
+        this.files = result.data.files
+        this.dataSource = new MatTableDataSource(result.data.files);
+        this.dataSource.sort = this.sort
+        for (const x of this.files) {
+          this.sizeTotal += x.size
+        }
+        this.stateProgress = 'determinate'
+        this.loading = false
+      }
+    })
+    
   }
 
 }

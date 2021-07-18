@@ -1,9 +1,14 @@
-<!-- <h3>Nom : {{ User?.username }}</h3>
-<h3>Mail : {{ User?.email }}</h3> -->
-
-<div class="flex flex-row border mt-36">
-    <div class="w-1/4 border">aa</div>
-    <div class="w-3/4 border">
-        <app-files></app-files>
+<div class="flex h-full">
+    <div style="width: 5%;">
+        <div class="bg-dark2 w-full h-full flex flex-col p-3">
+          <img
+            src="/assets/images/logopa.png"
+            class="mx-auto"
+            width="50px"
+            height="50px"
+          />
+        </div>
     </div>
+    
+    <app-files class="flex flex-row h-full w-full"></app-files>
 </div>
