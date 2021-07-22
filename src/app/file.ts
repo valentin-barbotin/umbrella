@@ -4,7 +4,12 @@ export interface File {
     name: string | null;
     type: string | null;
     lastModifiedDate: Date | null;
-    hash: string | "sha1" | "md5" | "sha256" | null;
+    hash: string | 'sha1' | 'md5' | 'sha256' | null;
+}
+export interface IKey {
+    algo: string;
+    key: Buffer;
+    iv: Buffer;
 }
 
 export interface IData {
@@ -21,10 +26,4 @@ export interface IData {
     crypted: boolean;
     compressed: boolean;
     key?: IKey;
-}
-
-export interface IKey {
-    algo: string;
-    key: Buffer;
-    iv: Buffer;
 }

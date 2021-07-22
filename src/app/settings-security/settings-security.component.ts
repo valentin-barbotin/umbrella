@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormGroupDirective, NgForm } from '@angular/forms';
+import { gql } from 'apollo-angular';
 
 
 
@@ -46,7 +47,7 @@ export class SettingsSecurityComponent implements OnInit {
     const password2 = this.password2?.value
 
     if (!password1 || !password2) return
-    if (password1 != password2) return
+    if (password1 !== password2) return
 
     const query = gql`
     mutation login($login: String!, $password: String!) {
