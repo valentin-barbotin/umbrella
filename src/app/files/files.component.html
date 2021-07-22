@@ -1,8 +1,5 @@
-
-
-<div class="flex flex-col justify-between">
+<div class="flex flex-col justify-between w-1/6">
     <div>
-      <h4>File manager</h4>
     </div>
 
     <div class="w-full mx-auto border-t px-5">
@@ -93,7 +90,7 @@
           Taille
         </th>
         <td mat-cell *matCellDef="let file">
-          {{ file.size | bytesConverter: "MB" }}
+          {{ file.originalSize | bytesConverter: "MB" }}
         </td>
       </ng-container>
 

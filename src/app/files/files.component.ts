@@ -128,7 +128,10 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
           (response) => {
             this.responseToBlob(response, file)
           },
-          (error: HttpErrorResponse) => {}
+          (error: HttpErrorResponse) => {
+            console.log(error);
+            
+          }
         )
       return
     }
@@ -179,37 +182,25 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   pickFile(event: MouseEvent, file: IData) {
-    // let elem: HTMLElement | null = event.target as HTMLElement
-
-    // if (elem.nodeName == 'TD') {
-    //   elem = elem.parentElement 
-    // }
-    
-    // if (!elem) return
 
     const id = file.name
     const size = file.size
     const ctrlKey = event.ctrlKey
+    const metaKey = event.metaKey
     
-    // if (!this.pickedElements) {
-      // this.pickedElements = new Set()
-      // this.pickedElementsTotalSize = 0
-    // } else {
-
-      if (!ctrlKey) {
-        this.pickedElementsTotalSize = 0
-        this.pickedElements.clear()
-      }
-
-    // }
+    if (!ctrlKey && !metaKey) {
+      this.pickedElementsTotalSize = 0
+      this.pickedElements.clear()
+    }
 
     if (this.pickedElements.has(id)) {
       this.pickedElementsTotalSize -= size
       this.pickedElements.delete(id)
-    } else {
-      this.pickedElementsTotalSize += size
-      this.pickedElements.add(id)
+      return
     }
+
+    this.pickedElementsTotalSize += size
+    this.pickedElements.add(id)
     
   }
 
@@ -227,32 +218,31 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
 
     return
     
-    this.http.get<IData[]>(
-      `${environment.api}files/list`,
-      {
-        // headers: new HttpHeaders(this.CrudService.getHeaders()),
-        reportProgress: true,
-        withCredentials: true,
-      }
-      ).subscribe(
-        (response) => {
-          this.pickedElementsTotalSize = 0
-          this.pickedElements?.clear()
-          this.files = response
-        },
-        (error: HttpErrorResponse) => {
-          console.log('Cannot retrieve files')
-        }
-      )
+    // this.http.get<IData[]>(
+    //   `${environment.api}files/list`,
+    //   {
+    //     // headers: new HttpHeaders(this.CrudService.getHeaders()),
+    //     reportProgress: true,
+    //     withCredentials: true,
+    //   }
+    //   ).subscribe(
+    //     (response) => {
+    //       this.pickedElementsTotalSize = 0
+    //       this.pickedElements?.clear()
+    //       this.files = response
+    //     },
+    //     (error: HttpErrorResponse) => {
+    //       console.log('Cannot retrieve files')
+    //     }
+    //   )
   }
 
   uploadFile(elem: HTMLInputElement) {
     const files = elem.files;
-    console.log(files);
     
     if (!files) return
-    console.log(files);
 
+    let totalSize = 0;
     let form = new FormData();
 
     let amount = 0;
@@ -267,29 +257,35 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
 
         let replace = true
         if (fileExists.length > 0) {
-          console.log('ask');
 
           if (!confirm(`${file.name} is already in this folder, do you want to replace it ?`)) {
             replace = false
-            console.log('dont replace');
           }
         }
 
         if (replace) {
-          console.log('append');
-          
+          totalSize += file.size
           form.append('file' + i, file)
           ++amount
         }
         
+      } else {
+        this.snackBar.open("Invalid file",'OK')
+        return
       }
     }
-    console.log('amount = ' + amount);
     
     elem.value = ''
     if (amount == 0) return
 
     this.stateProgress = 'indeterminate'
+
+    if (this.sizeTotal + totalSize > this.sizeLimit) {
+      this.snackBar.open('No enough space available','OK', {
+        duration: 10000
+      });
+      return
+    }
 
     this.http.post(
       `${environment.api}files/upload/true/true`,
@@ -317,21 +313,23 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   checkFile(file: globalThis.File) {
+
+    if (!environment.checkUploadedFiles) return true
+
     const allowed = [
       'image/png'
     ];
     
-    let size = false;
-    let type = false;
-    if (allowed.includes(file.type)) {
-      type = true
+    if (!allowed.includes(file.type)) {
+      this.snackBar.open('This type of file is not allowed','OK')
+      return false
     }
 
-    if (file.size < 5000000) {
-      size = true
+    if (file.size > 5000000) {
+      this.snackBar.open('The file is too large to be stored','OK')
+      return false
     }
 
-    // return size && type
     return true
   }
 
@@ -349,7 +347,6 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    // this.getFiles()
 
     this.loading = true
     this.stateProgress = 'query'
@@ -364,6 +361,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
             type
             lastModified
             size
+            originalSize
             crypted
             compressed
         }

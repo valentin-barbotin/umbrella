@@ -14,6 +14,8 @@ export class DashboardComponent implements OnInit {
 
   @Input() val: string = "";
 
+  mode: string = ""
+
   get User() {
     return this.UserService.User;
   }

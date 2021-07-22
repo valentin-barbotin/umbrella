@@ -7,6 +7,7 @@ import { User } from '../user';
 import { Router } from '@angular/router';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar'
+import {Apollo, gql} from 'apollo-angular';
 
 import {
   trigger,
@@ -43,13 +44,10 @@ export class LoginComponent implements OnInit {
 
   openDialog(): void {
     const dialogRef = this.dialog.open(resetPassword, {
-      // width: '250px',
-      // data: {name: this.name, animal: this.animal}
     });
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
-      // this.animal = result;
     });
   }
 
@@ -84,7 +82,7 @@ export class LoginComponent implements OnInit {
     for (const key in form.control.value) {
         formData.append(key, form.control.get(key)?.value )
     }
-
+    
     if (['connected','failed'].includes(this.state)) return
     
     this.state = "progress"
@@ -98,6 +96,45 @@ export class LoginComponent implements OnInit {
         component.state = "ready"
       }, 3000);
     }
+
+    const login = formData.get('login')
+    const password = formData.get('password')
+
+    const query = gql`
+    mutation login($login: String!, $password: String!) {
+      user(login: $login, password: $password) {
+          username
+          email
+      }
+    }
+    `
+
+    this.apollo.mutate({
+      mutation: query,
+      variables: {
+        login,
+        password
+      }
+    }).subscribe(
+      (response: any) => {
+        if (response?.data.user) {
+          localStorage.setItem('user', JSON.stringify(response));
+          this.state = "connected";
+          this.authButton = 'Connected !'
+          setTimeout(() => {
+            this.Router.navigate(['/'])
+          }, 3000);
+        } else {
+          failed(this)
+        }
+      },
+      (error) => {
+        console.log(error);
+        failed(this)
+      }
+    )
+
+    return
 
     this.http.post<User>(
       `${environment.api}users/login`,
@@ -139,7 +176,8 @@ export class LoginComponent implements OnInit {
     private snackBar: MatSnackBar,
     private http: HttpClient,
     private Router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private apollo: Apollo,
   ) {}
 }
 
@@ -200,7 +238,8 @@ export class resetPassword {
     private snackBar: MatSnackBar,
     private http: HttpClient,
     public dialogRef: MatDialogRef<resetPassword>,
-    @Inject(MAT_DIALOG_DATA) public data: any) {}
+    @Inject(MAT_DIALOG_DATA) public data: any
+    ) {}
 
   onNoClick(): void {
     this.dialogRef.close();

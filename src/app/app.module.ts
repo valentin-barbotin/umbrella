@@ -9,7 +9,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoginComponent, resetPassword } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 
-
+import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 
 // Material Form Controls
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -65,6 +65,10 @@ import { BytesConverterPipe } from './bytes-converter.pipe';
 import { MimeNamePipe } from './mime-name.pipe';
 import { httpInterceptorProviders } from './http-interceptors';
 import { GraphQLModule } from './graphql.module';
+import { SettingsComponent } from './settings/settings.component';
+import { SettingsAccountComponent } from './settings-account/settings-account.component';
+import { SettingsSecurityComponent } from './settings-security/settings-security.component';
+import { SettingsSubscriptionComponent } from './settings-subscription/settings-subscription.component';
 
 // export function HttpLoaderFactory(http: HttpClient) {
 //   return new TranslateHttpLoader(http);
@@ -78,6 +82,10 @@ import { GraphQLModule } from './graphql.module';
     LoginComponent,
     RegisterComponent,
     FilesComponent,
+    SettingsComponent,
+    SettingsAccountComponent,
+    SettingsSecurityComponent,
+    SettingsSubscriptionComponent,
     DashboardComponent,
     LogoutComponent,
     BytesConverterPipe,
@@ -135,7 +143,7 @@ import { GraphQLModule } from './graphql.module';
     MatPaginatorModule,
     MatSortModule,
     MatTableModule,
-    GraphQLModule
+    GraphQLModule,
   ],
   providers: [
     CookieService,
