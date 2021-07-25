@@ -1,7 +1,7 @@
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS } from '@angular/common/http'
 
-import { CheckSessionInterceptor } from './check-session.interceptor';
+import { CheckSessionInterceptor } from './check-session.interceptor'
 
 export const httpInterceptorProviders = [
-  { provide: HTTP_INTERCEPTORS, useClass: CheckSessionInterceptor, multi: true },
-];
+  { provide: HTTP_INTERCEPTORS, useClass: CheckSessionInterceptor, multi: true }
+]

@@ -119,7 +119,7 @@ export class LoginComponent implements OnInit {
       (response: any) => {
         if (response?.data.user) {
           localStorage.setItem('user', JSON.stringify(response));
-          this.state = "connected";
+          this.state = "connected"
           this.authButton = 'Connected !'
           setTimeout(() => {
             this.Router.navigate(['/'])

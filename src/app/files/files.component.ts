@@ -60,7 +60,32 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   shareFile () {
-    navigator.clipboard.writeText('test')
+    const selectionSize = this.pickedElements.size
+    switch (true) {
+      case (selectionSize === 0):
+        this.snackBar.open('No selection', 'OK')
+        return
+      case (selectionSize > 1):
+        this.snackBar.open('Only one file at time can be shared', 'OK')
+        return
+    }
+
+    this.apollo.watchQuery({
+      query: gql`
+      query filesharing($file: String!) {
+        filesharing(file: $file)
+      }
+      `,
+      variables: {
+        file: this.pickedElements.values().next().value
+      }
+    })
+      .valueChanges
+      .subscribe(
+        (result: any) => {
+          this.snackBar.open(`Sharing key = ${result.data.filesharing}`, 'OK')
+        }
+      )
   }
 
   createFolder () {
