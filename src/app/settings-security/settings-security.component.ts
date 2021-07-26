@@ -25,23 +25,23 @@ export class SettingsSecurityComponent implements OnInit {
   changeEmail = "Changer l'adresse mail"
   state = 'ready';
 
-  get password1 () {
+  get password1() {
     return this.changePwdForm.get('password1')
   }
 
-  get password2 () {
+  get password2() {
     return this.changePwdForm.get('password2')
   }
 
-  get email1 () {
+  get email1() {
     return this.changeEmailForm.get('email1')
   }
 
-  get email2 () {
+  get email2() {
     return this.changeEmailForm.get('email2')
   }
 
-  changePassword (form: FormGroupDirective) {
+  changePassword(form: FormGroupDirective) {
     const password1 = this.password1?.value
     const password2 = this.password2?.value
     const userStorage = localStorage.getItem('user')
@@ -78,22 +78,22 @@ export class SettingsSecurityComponent implements OnInit {
       }
     }).subscribe(
       (response: any) => {
-        if (response?.data.edit) {
-          this.snackBar.open('Mot de passe changé', 'OK', {
-            duration: 5000
-          })
+        let msg = ''
+        switch (response.data.edit) {
+          case true:
+            msg = 'Mot de passe changé'
+            break;
+          case false:
+            msg = "Il s'agit du mot de passe actuel"
+            break;
 
-          switch (response?.data.edit) {
-            case true:
-              this.snackBar.open("Il s'agit du mot de passe actuel", 'OK', {
-                duration: 5000
-              })
-              break;
-
-            default:
-              break;
-          }
+          default:
+            break;
         }
+
+        this.snackBar.open(msg, 'OK', {
+          duration: 5000
+        })
       },
       (error) => {
         console.log(error)
@@ -101,11 +101,11 @@ export class SettingsSecurityComponent implements OnInit {
     )
   }
 
-  constructor (
+  constructor(
     private apollo: Apollo,
     private snackBar: MatSnackBar
-  ) {}
+  ) { }
 
-  ngOnInit (): void {
+  ngOnInit(): void {
   }
 }
