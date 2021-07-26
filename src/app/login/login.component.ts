@@ -118,7 +118,7 @@ export class LoginComponent implements OnInit {
     }).subscribe(
       (response: any) => {
         if (response?.data.user) {
-          localStorage.setItem('user', JSON.stringify(response));
+          localStorage.setItem('user', JSON.stringify(response.data.user));
           this.state = "connected"
           this.authButton = 'Connected !'
           setTimeout(() => {
