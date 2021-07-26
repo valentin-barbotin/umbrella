@@ -82,6 +82,17 @@ export class SettingsSecurityComponent implements OnInit {
           this.snackBar.open('Mot de passe changé', 'OK', {
             duration: 5000
           })
+
+          switch (response?.data.edit) {
+            case true:
+              this.snackBar.open("Il s'agit du mot de passe actuel", 'OK', {
+                duration: 5000
+              })
+              break;
+
+            default:
+              break;
+          }
         }
       },
       (error) => {
