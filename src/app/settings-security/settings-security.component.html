@@ -4,7 +4,7 @@
     </div>
 
     <div class="w-2/3">
-        <form #form="ngForm" (ngSubmit)="changePassword(form)" [formGroup]="changePwdForm">
+        <form #form="ngForm" (ngSubmit)="changePassword()" [formGroup]="changePwdForm">
             <div class="flex justify-between">
                 <mat-form-field class="w-2/5" appearance="standard">
                     <mat-label class="text-gray-100">password</mat-label>
@@ -34,7 +34,7 @@
     </div>
 
     <div class="w-2/3">
-        <form #form="ngForm" (ngSubmit)="changeEmail(form)" [formGroup]="changeEmailForm">
+        <form #form="ngForm" (ngSubmit)="changeEmail()" [formGroup]="changeEmailForm">
             <div class="flex justify-between">
                 <mat-form-field class="w-2/5" appearance="standard">
                     <mat-label class="text-gray-100">email</mat-label>
