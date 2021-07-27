@@ -129,7 +129,7 @@
       ></tr>
       <tr
         (click)="pickFile($event, file)"
-        (dblclick)="download(file.name)"
+        (dblclick)="download(file.pubId)"
         [ngClass]="{
           'cursor-pointer': true,
           'bg-dark2': !isItPicked(file.name),

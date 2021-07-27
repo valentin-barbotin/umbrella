@@ -11,6 +11,7 @@ import { MatSort } from '@angular/material/sort'
 import { MatTableDataSource } from '@angular/material/table'
 import { Subscription } from 'rxjs'
 import { MatSnackBar } from '@angular/material/snack-bar'
+import { nanoid } from 'nanoid'
 
 @Component({
   selector: 'app-files',
@@ -58,6 +59,27 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.pickedElements?.has(id)
   }
 
+  /**
+   * Return all pubId of the files
+   */
+  getIDs (set: Set<string>) {
+    const items = []
+    for (const element of [...set]) {
+      items.push(
+        this.files.find(x => x.name === element)?.pubId
+      )
+    }
+    return items
+  }
+
+  /**
+   * Return the pubId of the file
+   */
+  getID (set: Set<string>) {
+    const selection = set.values().next().value
+    return this.files.find(x => x.name === selection)?.pubId
+  }
+
   shareFile () {
     const selectionSize = this.pickedElements.size
     switch (true) {
@@ -69,20 +91,27 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
         return
     }
 
+    const pubId = this.getID(this.pickedElements)
+    if (!pubId) return console.log('No pubId found')
+
     this.apollo.watchQuery({
       query: gql`
       query filesharing($file: String!) {
         filesharing(file: $file)
       }
       `,
+
       variables: {
-        file: this.pickedElements.values().next().value
+        file: pubId
       }
     })
       .valueChanges
       .subscribe(
         (result: any) => {
-          this.snackBar.open(`Sharing key = ${result.data.filesharing}`, 'OK')
+          const key = result.data.filesharing
+          const fullLink = `${environment.api}files/download/${pubId}?key=${key}`
+          navigator.clipboard.writeText(fullLink)
+          this.snackBar.open(fullLink, 'OK')
         }
       )
   }
@@ -103,7 +132,9 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (!res) return
 
-    this.cookieService.set('fileselection', JSON.stringify([...this.pickedElements]))
+    const elements = this.getIDs(this.pickedElements)
+
+    this.cookieService.set('fileselection', JSON.stringify(elements))
 
     this.http.delete(
       `${environment.api}files/delete`,
@@ -159,9 +190,11 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!this.pickedElements) return
 
     if (this.pickedElements.size === 1) {
-      const file = this.pickedElements.values().next().value
+      const pubId = this.getID(this.pickedElements)
+      if (!pubId) return console.log('No pubId found')
+
       this.http.get(
-        `${environment.api}files/download/${file}`,
+        `${environment.api}files/download/${pubId}`,
         {
           responseType: 'blob',
           reportProgress: true,
@@ -169,7 +202,8 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       ).subscribe(
         (response) => {
-          this.responseToBlob(response, file)
+          const filename = this.pickedElements.values().next().value
+          this.responseToBlob(response, filename)
         },
         (error: HttpErrorResponse) => {
           console.log(error)
@@ -178,7 +212,9 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
       return
     }
 
-    this.cookieService.set('fileselection', JSON.stringify([...this.pickedElements]))
+    const elements = this.getIDs(this.pickedElements)
+
+    this.cookieService.set('fileselection', JSON.stringify(elements))
 
     this.http.get(
       `${environment.api}files/download`,
@@ -189,7 +225,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     ).subscribe(
       (response) => {
-        this.responseToBlob(response, 'randomName')
+        this.responseToBlob(response, nanoid())
       },
       (error: HttpErrorResponse) => {
         console.log(error)
@@ -354,6 +390,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
             originalSize
             crypted
             compressed
+            pubId
         }
       }
       `

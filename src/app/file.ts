@@ -26,4 +26,5 @@ export interface IData {
     crypted: boolean;
     compressed: boolean;
     key?: IKey;
+    pubId: string;
 }
