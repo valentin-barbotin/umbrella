@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core'
-import { User } from '../user'
 import { UserService } from '../services/user.service'
 import { Router } from '@angular/router'
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http'
+import { HttpClient, HttpErrorResponse } from '@angular/common/http'
 import { environment } from '../../environments/environment'
 
 @Component({
@@ -38,7 +37,7 @@ export class DashboardComponent implements OnInit {
         const user = localStorage.getItem('user')
         console.log('check user on error')
         console.log(user)
-        if (error.status == 401 || !user) {
+        if (error.status === 401 || !user) {
           console.log('remove storage and redirect')
 
           localStorage.removeItem('user')

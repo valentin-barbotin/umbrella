@@ -1,9 +1,8 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { CookieService } from 'ngx-cookie-service';
-import { environment } from '../../environments/environment';
-import { CrudService } from '../services/crud.service';
+import { HttpClient } from '@angular/common/http'
+import { Component, OnInit } from '@angular/core'
+import { Router } from '@angular/router'
+import { CookieService } from 'ngx-cookie-service'
+import { environment } from '../../environments/environment'
 
 @Component({
   selector: 'app-logout',
@@ -11,15 +10,14 @@ import { CrudService } from '../services/crud.service';
   styleUrls: ['./logout.component.sass']
 })
 export class LogoutComponent implements OnInit {
-
-  constructor(
+  // eslint-disable-next-line no-useless-constructor
+  constructor (
     private Router: Router,
     private http: HttpClient,
-    private CrudService: CrudService,
     private cookieService: CookieService
   ) { }
 
-  ngOnInit(): void {
+  ngOnInit (): void {
     const exist = localStorage.getItem('user')
     if (!exist) {
       this.Router.navigate(['/'])
@@ -34,20 +32,18 @@ export class LogoutComponent implements OnInit {
       {
         // headers: new HttpHeaders(this.CrudService.getHeaders()),
         reportProgress: true,
-        withCredentials: true,
+        withCredentials: true
       }
-      ).subscribe(
-        (response) => {
-          console.log(response)
-          if (response) {
-            this.Router.navigate(['/'])
-          }
-        },
-        (error) => {
-          console.log(error)
+    ).subscribe(
+      (response) => {
+        console.log(response)
+        if (response) {
+          this.Router.navigate(['/'])
         }
-      )
-
+      },
+      (error) => {
+        console.log(error)
+      }
+    )
   }
-
 }

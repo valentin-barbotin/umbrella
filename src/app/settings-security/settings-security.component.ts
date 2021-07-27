@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import { FormGroup, FormControl, Validators, FormGroupDirective, NgForm } from '@angular/forms'
+import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { Apollo, gql } from 'apollo-angular'
 import { User } from '../user'
@@ -24,25 +24,25 @@ export class SettingsSecurityComponent implements OnInit {
   changePwd = 'Changer le mot de passe'
   changeMail = "Changer l'adresse mail"
   state = 'ready'
-  dualAuth = true 
+  dualAuth = true
 
-  get password1() {
+  get password1 () {
     return this.changePwdForm.get('password1')
   }
 
-  get password2() {
+  get password2 () {
     return this.changePwdForm.get('password2')
   }
 
-  get email1() {
+  get email1 () {
     return this.changeEmailForm.get('email1')
   }
 
-  get email2() {
+  get email2 () {
     return this.changeEmailForm.get('email2')
   }
 
-  changePassword() {
+  changePassword () {
     const password1 = this.password1?.value
     const password2 = this.password2?.value
     const userStorage = localStorage.getItem('user')
@@ -83,13 +83,13 @@ export class SettingsSecurityComponent implements OnInit {
         switch (response.data.edit) {
           case true:
             msg = 'Mot de passe changé'
-            break;
+            break
           case false:
             msg = "Il s'agit du mot de passe actuel"
-            break;
+            break
 
           default:
-            break;
+            break
         }
 
         this.snackBar.open(msg, 'OK', {
@@ -102,7 +102,7 @@ export class SettingsSecurityComponent implements OnInit {
     )
   }
 
-  changeEmail() {
+  changeEmail () {
     const email1 = this.email1?.value
     const email2 = this.email2?.value
     const userStorage = localStorage.getItem('user')
@@ -131,13 +131,13 @@ export class SettingsSecurityComponent implements OnInit {
         duration: 5000
       })
     }
-    
+
     const query = gql`
     mutation editEmail($email: String!, $username: String!) {
       edit: editEmail(email: $email, username: $username) 
     }`
-    console.log(user.username);
-    
+    console.log(user.username)
+
     this.apollo.mutate({
       mutation: query,
       variables: {
@@ -147,35 +147,30 @@ export class SettingsSecurityComponent implements OnInit {
     }).subscribe(
       (response: any) => {
         let msg = "Il s'agit de l'email actuel"
-        console.log(response);
-        
+        console.log(response)
+
         if (response.data.edit) {
           msg = 'Email changé'
           user.email = email1
-          localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem('user', JSON.stringify(user))
         }
-        
+
         this.snackBar.open(msg, 'OK', {
           duration: 5000
         })
-        
-        
       },
       (error) => {
         console.log(error)
       }
     )
-
   }
 
-  
-
-
-  constructor(
+  // eslint-disable-next-line no-useless-constructor
+  constructor (
     private apollo: Apollo,
     private snackBar: MatSnackBar
   ) { }
 
-  ngOnInit(): void {
+  ngOnInit (): void {
   }
 }

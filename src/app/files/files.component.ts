@@ -1,12 +1,11 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core'
 // import { Router } from '@angular/router'
 // import { CrudService } from '../services/crud.service'
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http'
+import { HttpClient, HttpErrorResponse } from '@angular/common/http'
 import { environment } from '../../environments/environment'
 import { IData } from '../file'
 import { CookieService } from 'ngx-cookie-service'
 import { Apollo, gql, QueryRef } from 'apollo-angular'
-import { HttpLink } from 'apollo-angular/http'
 import { ProgressBarMode } from '@angular/material/progress-bar'
 import { MatSort } from '@angular/material/sort'
 import { MatTableDataSource } from '@angular/material/table'
@@ -234,24 +233,6 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
         this.stateProgress = 'determinate'
       }
     )
-
-    // this.http.get<IData[]>(
-    //   `${environment.api}files/list`,
-    //   {
-    //     // headers: new HttpHeaders(this.CrudService.getHeaders()),
-    //     reportProgress: true,
-    //     withCredentials: true,
-    //   }
-    //   ).subscribe(
-    //     (response) => {
-    //       this.pickedElementsTotalSize = 0
-    //       this.pickedElements?.clear()
-    //       this.files = response
-    //     },
-    //     (error: HttpErrorResponse) => {
-    //       console.log('Cannot retrieve files')
-    //     }
-    //   )
   }
 
   uploadFile (elem: HTMLInputElement) {
@@ -343,11 +324,11 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
     return true
   }
 
+  // eslint-disable-next-line no-useless-constructor
   constructor (
     private http: HttpClient,
     private cookieService: CookieService,
     private apollo: Apollo,
-    private httpLink: HttpLink,
     private snackBar: MatSnackBar
   ) {}
 
