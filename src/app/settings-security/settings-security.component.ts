@@ -17,12 +17,12 @@ export class SettingsSecurityComponent implements OnInit {
   });
 
   changeEmailForm = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
-    newEmail: new FormControl('', [Validators.required, Validators.email])
+    email1: new FormControl('', [Validators.required, Validators.email]),
+    email2: new FormControl('', [Validators.required, Validators.email])
   });
 
   changePwd = 'Changer le mot de passe'
-  changeEmail = "Changer l'adresse mail"
+  changeMail = "Changer l'adresse mail"
   state = 'ready';
 
   get password1() {
@@ -67,7 +67,7 @@ export class SettingsSecurityComponent implements OnInit {
 
     const query = gql`
     mutation editPassword($password: String!, $username: String!) {
-      edit(password: $password, username: $username) 
+      edit: editPassword(password: $password, username: $username) 
     }`
 
     this.apollo.mutate({
@@ -100,6 +100,67 @@ export class SettingsSecurityComponent implements OnInit {
       }
     )
   }
+
+  changeEmail(form: FormGroupDirective) {
+    const email1 = this.email1?.value
+    const email2 = this.email2?.value
+    const userStorage = localStorage.getItem('user')
+
+    if (!userStorage) return
+
+    const user = JSON.parse(userStorage) as User
+    if (!user) return
+
+    if (!email1 || !email2) {
+      this.snackBar.open("Un champ n'est pas rempli", 'OK', {
+        duration: 5000
+      })
+      return
+    }
+
+    if (email1 !== email2) {
+      this.snackBar.open('Les valeurs des deux champs sont différents', 'OK', {
+        duration: 5000
+      })
+      return
+    }
+
+    const query = gql`
+    mutation editEmail($email: String!, $username: String!) {
+      edit: editEmail(email: $email, username: $username) 
+    }`
+    console.log(user.username);
+    
+    this.apollo.mutate({
+      mutation: query,
+      variables: {
+        email: email1,
+        username: user.username
+      }
+    }).subscribe(
+      (response: any) => {
+        let msg = "Il s'agit de l'email actuel"
+        
+        if (response.data.edit) {
+          msg = 'Email changé'
+          user.email = email1
+          localStorage.setItem('user', JSON.stringify(user));
+        }
+        
+        this.snackBar.open(msg, 'OK', {
+          duration: 5000
+        })
+        
+        
+      },
+      (error) => {
+        console.log(error)
+      }
+    )
+
+  }
+
+
 
   constructor(
     private apollo: Apollo,
