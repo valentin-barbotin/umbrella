@@ -41,7 +41,7 @@ export class SettingsSecurityComponent implements OnInit {
     return this.changeEmailForm.get('email2')
   }
 
-  changePassword(form: FormGroupDirective) {
+  changePassword() {
     const password1 = this.password1?.value
     const password2 = this.password2?.value
     const userStorage = localStorage.getItem('user')
@@ -101,7 +101,7 @@ export class SettingsSecurityComponent implements OnInit {
     )
   }
 
-  changeEmail(form: FormGroupDirective) {
+  changeEmail() {
     const email1 = this.email1?.value
     const email2 = this.email2?.value
     const userStorage = localStorage.getItem('user')
