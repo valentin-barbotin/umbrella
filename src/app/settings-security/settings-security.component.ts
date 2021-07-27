@@ -23,7 +23,8 @@ export class SettingsSecurityComponent implements OnInit {
 
   changePwd = 'Changer le mot de passe'
   changeMail = "Changer l'adresse mail"
-  state = 'ready';
+  state = 'ready'
+  dualAuth = true 
 
   get password1() {
     return this.changePwdForm.get('password1')
@@ -125,6 +126,12 @@ export class SettingsSecurityComponent implements OnInit {
       return
     }
 
+    if (user.email === email1) {
+      this.snackBar.open("Il s'agit de l'email actuel", 'OK', {
+        duration: 5000
+      })
+    }
+    
     const query = gql`
     mutation editEmail($email: String!, $username: String!) {
       edit: editEmail(email: $email, username: $username) 
@@ -140,6 +147,7 @@ export class SettingsSecurityComponent implements OnInit {
     }).subscribe(
       (response: any) => {
         let msg = "Il s'agit de l'email actuel"
+        console.log(response);
         
         if (response.data.edit) {
           msg = 'Email changé'
@@ -160,6 +168,7 @@ export class SettingsSecurityComponent implements OnInit {
 
   }
 
+  
 
 
   constructor(
