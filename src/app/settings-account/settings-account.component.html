@@ -26,8 +26,8 @@
         <form #form="ngForm" (ngSubmit)="changeUsername()" [formGroup]="changeInfoForm">
             <div class="flex justify-between">
                 <mat-form-field class="w-2/5" appearance="standard">
-                    <mat-label class="text-gray-100">Username</mat-label>
-                    <input formControlName="username" matInput type="text" />
+                    <mat-label class="text-gray-100">New username</mat-label>
+                    <input formControlName="newUsername" matInput type="text" />
                 </mat-form-field>
             </div>
             <button *ngIf="changeInfoForm.valid" mat-raised-button type="submit" [disabled]="changeInfoForm.invalid"
