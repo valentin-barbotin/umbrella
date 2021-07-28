@@ -3,7 +3,12 @@ import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { Apollo, gql } from 'apollo-angular'
 import { User } from '../user'
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 
+export interface DialogData {
+  animal: string;
+  name: string;
+}
 @Component({
   selector: 'app-settings-security',
   templateUrl: './settings-security.component.html',
@@ -11,6 +16,14 @@ import { User } from '../user'
 })
 
 export class SettingsSecurityComponent implements OnInit {
+  openDialog (): void {
+    const dialogRef = this.dialog.open(dualAuth, { panelClass: 'custom-dialog-container' })
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed')
+    })
+  }
+
   changePwdForm = new FormGroup({
     password1: new FormControl('', [Validators.required, Validators.minLength(2)]),
     password2: new FormControl('', [Validators.required, Validators.minLength(2)])
@@ -24,7 +37,7 @@ export class SettingsSecurityComponent implements OnInit {
   changePwd = 'Changer le mot de passe'
   changeMail = "Changer l'adresse mail"
   state = 'ready'
-  dualAuth = true
+  dualAuth = 'openDialog()'
 
   get password1 () {
     return this.changePwdForm.get('password1')
@@ -168,9 +181,32 @@ export class SettingsSecurityComponent implements OnInit {
   // eslint-disable-next-line no-useless-constructor
   constructor (
     private apollo: Apollo,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    public dialog: MatDialog
+
   ) { }
 
   ngOnInit (): void {
+  }
+}
+
+@Component({
+  selector: 'dualAuth',
+  templateUrl: './dualAuth.html'
+})
+export class dualAuth {
+  dualAuthForm = new FormGroup({
+  });
+
+  // eslint-disable-next-line no-useless-constructor
+  constructor (
+    private snackBar: MatSnackBar,
+    // private http: HttpClient,
+    public dialogRef: MatDialogRef<dualAuth>
+    // @Inject(MAT_DIALOG_DATA) public data: any
+  ) {}
+
+  onNoClick (): void {
+    this.dialogRef.close()
   }
 }

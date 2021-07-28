@@ -64,11 +64,9 @@
             </div>
 
             <mat-slide-toggle
-            [(ngModel)]="dualAuth"
+            (change)="openDialog()"
             >
-            {{dualAuth ? 'Ok' : 'KO'}}
             </mat-slide-toggle>
         </div>
     </div>
 </div>
-
