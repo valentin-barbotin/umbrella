@@ -1,0 +1,17 @@
+<form (ngSubmit)="onSubmit(form)" #form="ngForm" [formGroup]="createFolder">
+
+    <mat-form-field appearance="standard" class="w-full">
+        <mat-label>Création de dossier</mat-label>
+        <input formControlName="folder" matInput/>
+    </mat-form-field>
+
+    <button
+      mat-raised-button
+      type="submit"
+      [disabled]="createFolder.invalid"
+      class="mt-80 border"
+    >
+      {{ createFolder.invalid ? 'Waiting' : 'Create' }}
+    </button>
+    
+</form>

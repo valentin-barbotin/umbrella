@@ -12,6 +12,8 @@ import { MatTableDataSource } from '@angular/material/table'
 import { Subscription } from 'rxjs'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { nanoid } from 'nanoid'
+import { MatDialog } from '@angular/material/dialog'
+import { createFolderComponent } from './createFolder.component'
 
 @Component({
   selector: 'app-files',
@@ -117,7 +119,12 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   createFolder () {
+    const dialogRef = this.dialog.open(createFolderComponent, {
+    })
 
+    // dialogRef.afterClosed().subscribe(result => {
+    //   console.log('The dialog was closed')
+    // })
   }
 
   applyFilter (event: Event) {
@@ -365,8 +372,9 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
     private http: HttpClient,
     private cookieService: CookieService,
     private apollo: Apollo,
-    private snackBar: MatSnackBar
-  ) {}
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
+    ) {}
 
   ngOnDestroy () {
     if (!this.querySubscription) return
