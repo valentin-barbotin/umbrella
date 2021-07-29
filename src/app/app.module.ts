@@ -67,8 +67,8 @@ import { MimeNamePipe } from './mime-name.pipe'
 import { httpInterceptorProviders } from './http-interceptors'
 import { GraphQLModule } from './graphql.module'
 import { SettingsComponent } from './settings/settings.component'
-import { SettingsAccountComponent } from './settings-account/settings-account.component'
-import { SettingsSecurityComponent } from './settings-security/settings-security.component'
+import { SettingsAccountComponent, delAccount } from './settings-account/settings-account.component'
+import { dualAuth, SettingsSecurityComponent } from './settings-security/settings-security.component'
 import { SettingsSubscriptionComponent } from './settings-subscription/settings-subscription.component'
 
 // export function HttpLoaderFactory(http: HttpClient) {
@@ -90,7 +90,9 @@ import { SettingsSubscriptionComponent } from './settings-subscription/settings-
     BytesConverterPipe,
     MimeNamePipe,
     resetPassword,
-    createFolderComponent
+    createFolderComponent,
+    delAccount,
+    dualAuth
   ],
   imports: [
     // TranslateModule.forRoot({
