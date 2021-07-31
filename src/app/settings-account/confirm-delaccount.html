@@ -1,0 +1,17 @@
+<div>
+    <h3>Voulez-vous vraiment supprimer votre compte ?</h3>
+    <div class="flex">
+        <form #form="ngForm" (ngSubmit)="removeAccount()" [formGroup]="delAccountForm">
+            <div class="flex justify-between">
+                <mat-form-field class="" appearance="standard">
+                    <mat-label class="text-gray-100">Entrez votre nom d'utilisateur :</mat-label>
+                    <input formControlName="myUsername" matInput type="text" />
+                </mat-form-field>
+            </div>
+            <button *ngIf="delAccountForm.valid" mat-raised-button color='warn' type="submit" [disabled]="delAccountForm.invalid"
+                class="mt-52 border">
+                {{ delAccountForm.invalid ? 'Waiting' : delAccount }}
+            </button>
+        </form>
+    </div>
+</div>

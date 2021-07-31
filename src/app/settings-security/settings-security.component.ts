@@ -149,7 +149,6 @@ export class SettingsSecurityComponent implements OnInit {
     mutation editEmail($email: String!, $username: String!) {
       edit: editEmail(email: $email, username: $username) 
     }`
-    console.log(user.username)
 
     this.apollo.mutate({
       mutation: query,
@@ -192,7 +191,8 @@ export class SettingsSecurityComponent implements OnInit {
 
 @Component({
   selector: 'dualAuth',
-  templateUrl: './dualAuth.html'
+  templateUrl: './dualAuth.html',
+  styleUrls: ['./settings-security.component.sass']
 })
 export class dualAuth {
   dualAuthForm = new FormGroup({

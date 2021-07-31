@@ -1,7 +1,19 @@
-<p>settings-subscription works!</p>
-
-<span class="text-gray-100">
-    {{ FileService.sizeTotal | bytesConverter: "MB" }} /
-    {{ FileService.sizeLimit | bytesConverter: "MB" }} (
-    {{ FileService.calcUsedStorage().toFixed(0) }} % )
-  </span>
+<div class="border bg-dark1 mx-auto w-2/3 mt-24 rounded-lg text-white">
+    <div class="flex justify-around mx-4 mt-4">
+        <div>
+            <mat-progress-spinner [color]="'#505050'" [mode]="'determinate'" [value]="50">
+            </mat-progress-spinner>
+            <h3>Taille = {{ 261565161 | bytesConverter: "MB" }} </h3>
+        </div>
+        <div>
+            <mat-progress-spinner [color]="'#505050'" [mode]="'determinate'" [value]="50">
+            </mat-progress-spinner>
+            <h3>Taille = {{ 261565161 | bytesConverter: "MB" }} </h3>
+        </div>
+        <div class="mt-12">
+            <button mat-raised-button type="submit" class="border">
+                Prendre un abonnement
+            </button>
+        </div>
+    </div>
+</div>
