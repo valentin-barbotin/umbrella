@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { Apollo, gql } from 'apollo-angular'
 import { User } from '../user'
 import { FileService } from '../services/file.service'
+import { MatDialogRef, MatDialog } from '@angular/material/dialog'
 @Component({
   selector: 'app-settings-account',
   templateUrl: './settings-account.component.html',
@@ -78,7 +79,8 @@ export class SettingsAccountComponent implements OnInit {
   constructor (
     private apollo: Apollo,
     private snackBar: MatSnackBar,
-    private FileService: FileService
+    private FileService: FileService,
+    private dialog: MatDialog
   ) {
   }
 
