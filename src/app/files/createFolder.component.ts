@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core'
 import { FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms'
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
-import { gql } from 'apollo-angular'
+import { Apollo, gql } from 'apollo-angular'
 
 @Component({
   selector: 'createFolder',
@@ -12,6 +12,7 @@ export class createFolderComponent {
   // eslint-disable-next-line no-useless-constructor
   constructor (
         private snackBar: MatSnackBar,
+        private apollo: Apollo,
         public dialogRef: MatDialogRef<createFolderComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
@@ -25,17 +26,35 @@ export class createFolderComponent {
   }
 
   onSubmit (form: FormGroupDirective) {
-    const formData = new FormData()
+    const name = form.control.get('folder')?.value
+    if (!name) return
 
-    for (const key in form.control.value) {
-      formData.append(key, form.control.get(key)?.value)
-    }
-
-    const folder = formData.get('folder')
+    const parent = this.data.folder
 
     const query = gql`
-    
+      mutation createFolder($parent: String, $name: String!) {
+        createFolder(parent: $parent, name: $name)
+      }
     `
+
+    this.apollo.mutate({
+      mutation: query,
+      variables: {
+        parent,
+        name
+      }
+    }).subscribe(
+      (result: any) => {
+        if (result.data.createFolder) {
+          this.snackBar.open('Dossier crée', 'OK')
+          this.dialogRef.close(result)
+        }
+      },
+      (error) => {
+        this.snackBar.open('Erreur de création', 'OK')
+        console.log(error)
+      }
+    )
   }
 
   onNoClick (): void {

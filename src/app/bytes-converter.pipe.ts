@@ -5,6 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core'
 })
 export class BytesConverterPipe implements PipeTransform {
   transform (value: number, ...args: any[]): any {
+    if (!value) return ''
     if (args.length === 1) {
       let origin: string | number = value
       let withKb = false

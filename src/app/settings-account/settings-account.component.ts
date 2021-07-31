@@ -3,10 +3,12 @@ import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { Apollo, gql } from 'apollo-angular'
 import { User } from '../user'
+import { FileService } from '../services/file.service'
 @Component({
   selector: 'app-settings-account',
   templateUrl: './settings-account.component.html',
-  styleUrls: ['./settings-account.component.sass']
+  styleUrls: ['./settings-account.component.sass'],
+  inputs: ['files']
 })
 export class SettingsAccountComponent implements OnInit {
   changeInfoForm = new FormGroup({
@@ -69,8 +71,10 @@ export class SettingsAccountComponent implements OnInit {
   // eslint-disable-next-line no-useless-constructor
   constructor (
     private apollo: Apollo,
-    private snackBar: MatSnackBar
-  ) { }
+    private snackBar: MatSnackBar,
+    private FileService: FileService
+  ) {
+  }
 
   ngOnInit (): void {
   }

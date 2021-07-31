@@ -1,1 +1,7 @@
 <p>settings-subscription works!</p>
+
+<span class="text-gray-100">
+    {{ FileService.sizeTotal | bytesConverter: "MB" }} /
+    {{ FileService.sizeLimit | bytesConverter: "MB" }} (
+    {{ FileService.calcUsedStorage().toFixed(0) }} % )
+  </span>

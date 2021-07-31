@@ -5,6 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core'
 })
 export class MimeNamePipe implements PipeTransform {
   transform (value: string, ...args: any[]): unknown {
+    if (!value) return ''
     if (args.length !== 1) return value
 
     const dict: { [k: string]: string} = {

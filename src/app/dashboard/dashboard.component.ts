@@ -3,6 +3,7 @@ import { UserService } from '../services/user.service'
 import { Router } from '@angular/router'
 import { HttpClient, HttpErrorResponse } from '@angular/common/http'
 import { environment } from '../../environments/environment'
+import { FileService } from '../services/file.service'
 
 @Component({
   selector: 'app-dashboard',
@@ -21,7 +22,8 @@ export class DashboardComponent implements OnInit {
   constructor (
     private UserService: UserService,
     private Router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    public FileService: FileService
   ) {
     this.http.get(
       `${environment.api}users/check`,

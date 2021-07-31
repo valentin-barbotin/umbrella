@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core'
-// import { Router } from '@angular/router'
-// import { CrudService } from '../services/crud.service'
+import { AfterViewInit, Component, Injectable, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { HttpClient, HttpErrorResponse } from '@angular/common/http'
 import { environment } from '../../environments/environment'
 import { IData } from '../file'
+import { IFolder } from '../folder'
+import { FileService } from '../services/file.service'
+import { UserService } from '../services/user.service'
 import { CookieService } from 'ngx-cookie-service'
 import { Apollo, gql, QueryRef } from 'apollo-angular'
 import { ProgressBarMode } from '@angular/material/progress-bar'
@@ -23,12 +24,11 @@ import { createFolderComponent } from './createFolder.component'
 export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
 
-  // dataSource!: MatTableDataSource<IData>;
-  dataSource = new MatTableDataSource([]);
+  // dataSource = new MatTableDataSource<any>([]);
   files: IData[] = []
-  sizeLimit: number = 1e10;
-  sizeTotal: number = 0;
-  loading: boolean = false;
+  // loading: boolean = false;
+
+  folders: IFolder[] = []
 
   hoveredElement?: string;
 
@@ -37,28 +37,49 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   stateUploading: ProgressBarMode = 'indeterminate'
   stateFixed: ProgressBarMode = 'determinate'
-  stateProgress = 'determinate';
 
   displayedColumns = ['name', 'size', 'type', 'createdOn']
 
-  filesQuery?: QueryRef<any>
-  querySubscription?: Subscription;
-
-  ngAfterViewInit () {
-    if (!this.dataSource) return
-    this.dataSource.sort = this.sort
-  }
+  currentFolder: string = 'root'
+  currentPath: IFolder[] = [];
 
   getProgressState () {
-    return this.stateProgress ? this.stateUploading : this.stateFixed
-  }
-
-  calcUsedStorage () {
-    return (this.sizeTotal / this.sizeLimit) * 100
+    return this.FileService.stateProgress ? this.stateUploading : this.stateFixed
   }
 
   isItPicked (id: string) {
     return this.pickedElements?.has(id)
+  }
+
+  clickOnElem (elem: IData, event: MouseEvent) {
+    this.pickFile(event, elem)
+  }
+
+  doubleClickOnElem (elem: IFolder) {
+    if (elem.type) return this.download(elem.name, elem.pubId)
+
+    this.clickOnFolder(elem)
+    this.getData()
+  }
+
+  clickOnFolder (folder: IFolder) {
+    if (folder.pubId === this.currentFolder) return
+    this.currentFolder = folder.pubId
+
+    const checkIfInCurrentPath = this.currentPath.findIndex(x => x.pubId === folder.pubId)
+    if (checkIfInCurrentPath > -1) {
+      this.currentPath = this.currentPath.slice(0, checkIfInCurrentPath + 1)
+    } else {
+      this.currentPath.push(folder)
+    }
+
+    this.getData()
+  }
+
+  clearFolderPath () {
+    this.currentFolder = 'root'
+    this.currentPath = []
+    this.getData()
   }
 
   /**
@@ -68,7 +89,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
     const items = []
     for (const element of [...set]) {
       items.push(
-        this.files.find(x => x.name === element)?.pubId
+        this.FileService.files.find(x => x.name === element)?.pubId
       )
     }
     return items
@@ -79,7 +100,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   getID (set: Set<string>) {
     const selection = set.values().next().value
-    return this.files.find(x => x.name === selection)?.pubId
+    return this.FileService.files.find(x => x.name === selection)?.pubId
   }
 
   shareFile () {
@@ -94,7 +115,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     const pubId = this.getID(this.pickedElements)
-    if (!pubId) return console.log('No pubId found')
+    if (!pubId) return
 
     this.apollo.watchQuery({
       query: gql`
@@ -120,26 +141,31 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   createFolder () {
     const dialogRef = this.dialog.open(createFolderComponent, {
+      data: {
+        folder: this.currentFolder
+      }
     })
 
-    // dialogRef.afterClosed().subscribe(result => {
-    //   console.log('The dialog was closed')
-    // })
+    dialogRef.afterClosed().subscribe(result => {
+      this.getData()
+      console.log('The dialog was closed')
+    })
   }
 
   applyFilter (event: Event) {
     const filterValue = (event.target as HTMLInputElement).value
-    this.dataSource.filter = filterValue.trim().toLowerCase()
+    this.FileService.dataSource.filter = filterValue.trim().toLowerCase()
   }
 
   deleteFiles () {
     if (!this.pickedElements) return
     const amount = this.pickedElements.size
-    const res = confirm(`Do you really want to delete ${amount} files. This action is irreversible`)
-
-    if (!res) return
-
+    if (amount === 0) return
     const elements = this.getIDs(this.pickedElements)
+    if (!elements.find(x => !x)) return
+
+    const res = confirm(`Do you really want to delete ${amount} files. This action is irreversible`)
+    if (!res) return
 
     this.cookieService.set('fileselection', JSON.stringify(elements))
 
@@ -155,7 +181,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
           duration: 10000
         })
 
-        this.getFiles()
+        this.getData()
       },
       (error: HttpErrorResponse) => {
         console.log(error)
@@ -174,10 +200,11 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
     downloadLink.click()
   }
 
-  download (file?: string) {
-    if (file) {
+  download (file?: string, pubId?: string) {
+    if (pubId && file) {
+      console.log(pubId)
       this.http.get(
-        `${environment.api}files/download/${file}`,
+        `${environment.api}files/download/${pubId}`,
         {
           responseType: 'blob',
           reportProgress: true,
@@ -198,7 +225,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.pickedElements.size === 1) {
       const pubId = this.getID(this.pickedElements)
-      if (!pubId) return console.log('No pubId found')
+      if (!pubId) return
 
       this.http.get(
         `${environment.api}files/download/${pubId}`,
@@ -232,7 +259,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     ).subscribe(
       (response) => {
-        this.responseToBlob(response, nanoid())
+        this.responseToBlob(response, nanoid() + '.zip')
       },
       (error: HttpErrorResponse) => {
         console.log(error)
@@ -257,23 +284,29 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     if (this.pickedElements.has(id)) {
-      this.pickedElementsTotalSize -= size
+      if (file.type) this.pickedElementsTotalSize -= size
       this.pickedElements.delete(id)
       return
     }
 
-    this.pickedElementsTotalSize += size
+    if (file.type) this.pickedElementsTotalSize += size
     this.pickedElements.add(id)
   }
 
-  getFiles () {
-    if (!this.filesQuery) return
+  getData () {
+    if (!this.FileService.dataQuery) return
+    const user = this.UserService.User
+    if (!user) return
     this.pickedElements?.clear()
     this.pickedElementsTotalSize = 0
-    this.stateProgress = 'query'
-    this.filesQuery.refetch().then(
+    this.FileService.stateProgress = 'query'
+    this.FileService.dataQuery.refetch({
+      folder: this.currentFolder,
+      username: user.username
+    }).then(
       () => {
-        this.stateProgress = 'determinate'
+        // this.FileService.updateDataSource()
+        this.FileService.stateProgress = 'determinate'
       }
     )
   }
@@ -291,7 +324,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
       const file = files.item(i)
       if (!file) return
       if (this.checkFile(file)) {
-        const fileExists = this.files.filter(x =>
+        const fileExists = this.FileService.files.filter(x =>
           x.name === file.name
         )
 
@@ -316,33 +349,35 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
     elem.value = ''
     if (amount === 0) return
 
-    this.stateProgress = 'indeterminate'
+    this.FileService.stateProgress = 'indeterminate'
 
-    if (this.sizeTotal + totalSize > this.sizeLimit) {
+    if (this.FileService.sizeTotal + totalSize > this.FileService.sizeLimit) {
       this.snackBar.open('No enough space available', 'OK', {
         duration: 10000
       })
       return
     }
 
+    form.append('folder', this.currentFolder ?? 'root')
+
     this.http.post(
-      `${environment.api}files/upload/true/true`,
+      `${environment.api}files/upload`,
       form,
       {
-        // headers: new HttpHeaders(this.CrudService.getHeaders()),
         reportProgress: true,
         withCredentials: true
       }
     ).subscribe(
       (response) => {
-        this.snackBar.open(`${amount} files have been uploaded`, 'Ok', {
-          duration: 10000
-        })
-
-        this.getFiles()
       },
       (error) => {
         console.log(error)
+      },
+      () => {
+        this.snackBar.open(`${amount} files have been uploaded`, 'Ok', {
+          duration: 10000
+        })
+        this.getData()
       }
     )
   }
@@ -373,51 +408,24 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
     private cookieService: CookieService,
     private apollo: Apollo,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
-    ) {}
+    private dialog: MatDialog,
+    public FileService: FileService,
+    private UserService: UserService
+  ) {
+  }
 
   ngOnDestroy () {
-    if (!this.querySubscription) return
-    this.querySubscription.unsubscribe()
+    // if (!this.queryFilesSubscription) return
+    // this.queryFilesSubscription.unsubscribe()
   }
 
   ngOnInit (): void {
-    this.loading = true
-    this.stateProgress = 'query'
+  }
 
-    this.filesQuery = this.apollo.watchQuery({
-      query: gql`
-      {
-        files {
-            createdOn
-            name
-            shared
-            type
-            lastModified
-            size
-            originalSize
-            crypted
-            compressed
-            pubId
-        }
-      }
-      `
-    })
-
-    this.querySubscription = this.filesQuery
-      .valueChanges
-      .subscribe((result: any) => {
-        this.sizeTotal = 0
-        if (result.data) {
-          this.files = result.data.files
-          this.dataSource = new MatTableDataSource(result.data.files)
-          this.dataSource.sort = this.sort
-          for (const x of this.files) {
-            this.sizeTotal += x.size
-          }
-          this.stateProgress = 'determinate'
-          this.loading = false
-        }
-      })
+  ngAfterViewInit () {
+    // this.loading = true
+    // this.FileService.stateProgress = 'query'
+    // this.updateDataSource()
+    // if (!this.dataSource) return
   }
 }
