@@ -70,7 +70,7 @@ import { SettingsComponent } from './settings/settings.component'
 import { SettingsAccountComponent, delAccount } from './settings-account/settings-account.component'
 import { dualAuth, SettingsSecurityComponent } from './settings-security/settings-security.component'
 import { SettingsSubscriptionComponent } from './settings-subscription/settings-subscription.component'
-
+import { QRCodeModule } from 'angular2-qrcode'
 // export function HttpLoaderFactory(http: HttpClient) {
 //   return new TranslateHttpLoader(http);
 // }
@@ -145,7 +145,9 @@ import { SettingsSubscriptionComponent } from './settings-subscription/settings-
     MatPaginatorModule,
     MatSortModule,
     MatTableModule,
-    GraphQLModule
+    GraphQLModule,
+    QRCodeModule
+
   ],
   providers: [
     CookieService,

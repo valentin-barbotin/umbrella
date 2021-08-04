@@ -4,7 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { Apollo, gql } from 'apollo-angular'
 import { User } from '../user'
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
-
+import { QRCodeModule } from 'angular2-qrcode'
 export interface DialogData {
   animal: string;
   name: string;
@@ -197,6 +197,12 @@ export class SettingsSecurityComponent implements OnInit {
 export class dualAuth {
   dualAuthForm = new FormGroup({
   });
+
+  // item = [{
+  //   'test' : "https://www.google.fr/"
+  // }]
+
+  // qrInfo = JSON.stringify(this.item);
 
   // eslint-disable-next-line no-useless-constructor
   constructor (
