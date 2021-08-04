@@ -2,18 +2,26 @@ import { Injectable, ViewChild } from '@angular/core'
 import { MatSort } from '@angular/material/sort'
 import { MatTableDataSource } from '@angular/material/table'
 import { Apollo, gql, QueryRef } from 'apollo-angular'
-import { resolve } from 'dns'
 import { Subscription } from 'rxjs'
 import { IData } from '../file'
 import { IFolder } from '../folder'
 import { UserService } from './user.service'
+
+interface GET_DATA_QUERY_RESPONSE {
+  data: {
+    files: IData[]
+    folders: IFolder[]
+    storageUsed: number
+    storageMax: number
+  }
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class FileService {
   @ViewChild(MatSort) sort!: MatSort;
-  sizeLimit: number = 1e10;
+  sizeLimit: number = 0;
   sizeTotal: number = 0;
   stateProgress = 'determinate';
 
@@ -64,6 +72,7 @@ export class FileService {
             pubId
         },
         storageUsed(username: $username)
+        storageMax(username: $username)
       }
     `
 
@@ -77,12 +86,14 @@ export class FileService {
 
     this.queryDataSubscription = this.dataQuery
       .valueChanges
-      .subscribe((result: any) => {
+      .subscribe((result: GET_DATA_QUERY_RESPONSE) => {
         this.sizeTotal = 0
+        this.sizeLimit = 0
         if (result.data) {
           this.files = result.data.files
           this.folders = result.data.folders
           this.sizeTotal = result.data.storageUsed
+          this.sizeLimit = result.data.storageMax
           this.updateDataSource()
         }
       })

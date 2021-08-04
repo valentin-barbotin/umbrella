@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Injectable, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { HttpClient, HttpErrorResponse } from '@angular/common/http'
 import { environment } from '../../environments/environment'
 import { IData } from '../file'
@@ -6,11 +6,9 @@ import { IFolder } from '../folder'
 import { FileService } from '../services/file.service'
 import { UserService } from '../services/user.service'
 import { CookieService } from 'ngx-cookie-service'
-import { Apollo, gql, QueryRef } from 'apollo-angular'
+import { Apollo, gql } from 'apollo-angular'
 import { ProgressBarMode } from '@angular/material/progress-bar'
 import { MatSort } from '@angular/material/sort'
-import { MatTableDataSource } from '@angular/material/table'
-import { Subscription } from 'rxjs'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { nanoid } from 'nanoid'
 import { MatDialog } from '@angular/material/dialog'
@@ -79,6 +77,11 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
   clearFolderPath () {
     this.currentFolder = 'root'
     this.currentPath = []
+    this.getData()
+  }
+
+  returnToParentFolder () {
+    this.currentFolder = this.currentPath.pop()?.parent ?? 'root'
     this.getData()
   }
 

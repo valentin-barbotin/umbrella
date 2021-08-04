@@ -1,4 +1,5 @@
 export const environment = {
-  production: true,
+  production: false,
   api: 'http://localhost:8088/',
-};
+  checkUploadedFiles: false
+}
