@@ -92,18 +92,7 @@ export class SettingsSecurityComponent implements OnInit {
       }
     }).subscribe(
       (response: any) => {
-        let msg = ''
-        switch (response.data.edit) {
-          case true:
-            msg = 'Mot de passe changé'
-            break
-          case false:
-            msg = "Il s'agit du mot de passe actuel"
-            break
-
-          default:
-            break
-        }
+        const msg = (response.data.edit) ? 'Mot de passe changé' : 'Il s\'agit du mot de passe actuel'
 
         this.snackBar.open(msg, 'OK', {
           duration: 5000

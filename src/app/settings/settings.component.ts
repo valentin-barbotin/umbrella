@@ -8,7 +8,7 @@ interface AccountSetting {
   children?: AccountSetting[];
 }
 
-interface ExampleFlatNode {
+interface FlatNode {
   expandable: boolean;
   id: string;
   name: string;
@@ -21,6 +21,8 @@ interface ExampleFlatNode {
   styleUrls: ['./settings.component.sass']
 })
 export class SettingsComponent implements OnInit {
+  mode: string = ''
+
   private _transformer = (node: AccountSetting, level: number) => {
     return {
       expandable: !!node.children && node.children.length > 0,
@@ -30,9 +32,7 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  mode: string = 'osef'
-
-  treeControl = new FlatTreeControl<ExampleFlatNode>(
+  treeControl = new FlatTreeControl<FlatNode>(
     node => node.level, node => node.expandable);
 
   treeFlattener = new MatTreeFlattener(
@@ -40,7 +40,7 @@ export class SettingsComponent implements OnInit {
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
-  hasChild = (_: number, node: ExampleFlatNode) => node.expandable;
+  hasChild = (_: number, node: FlatNode) => node.expandable;
 
   TREE_DATA: AccountSetting[] = [
     {

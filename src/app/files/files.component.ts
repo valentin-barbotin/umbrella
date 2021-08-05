@@ -22,9 +22,7 @@ import { createFolderComponent } from './createFolder.component'
 export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
 
-  // dataSource = new MatTableDataSource<any>([]);
   files: IData[] = []
-  // loading: boolean = false;
 
   folders: IFolder[] = []
 
@@ -426,9 +424,5 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit () {
-    // this.loading = true
-    // this.FileService.stateProgress = 'query'
-    // this.updateDataSource()
-    // if (!this.dataSource) return
   }
 }

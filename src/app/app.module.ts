@@ -54,8 +54,6 @@ import { MatSortModule } from '@angular/material/sort'
 import { MatTableModule } from '@angular/material/table'
 // import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 // import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { HttpClient } from '@angular/common/http'
-
 import { createFolderComponent } from './files/createFolder.component'
 import { FilesComponent } from './files/files.component'
 import { DashboardComponent } from './dashboard/dashboard.component'
