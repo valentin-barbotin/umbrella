@@ -3,8 +3,8 @@ import { MatSort } from '@angular/material/sort'
 import { MatTableDataSource } from '@angular/material/table'
 import { Apollo, gql, QueryRef } from 'apollo-angular'
 import { Subscription } from 'rxjs'
-import { IData } from '../file'
-import { IFolder } from '../folder'
+import { IData } from '../interfaces/file'
+import { IFolder } from '../interfaces/folder'
 import { UserService } from './user.service'
 
 interface GET_DATA_QUERY_RESPONSE {
