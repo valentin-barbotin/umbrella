@@ -22,6 +22,11 @@
       >
     </mat-form-field>
 
+    <mat-form-field appearance="standard" class="w-full">
+      <mat-label>2FA (if activated)</mat-label>
+      <input formControlName="otp" matInput type="number"/>
+    </mat-form-field>
+
     <h4>
       <a class="my-3 cursor-pointer hover:text-indigo-700 transition-colors hover:underline" (click)="openDialog()" >Reset password</a>
     </h4>

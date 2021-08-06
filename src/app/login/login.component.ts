@@ -15,11 +15,6 @@ import {
   transition
 } from '@angular/animations'
 
-export interface DialogData {
-  animal: string;
-  name: string;
-}
-
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -50,7 +45,8 @@ export class LoginComponent implements OnInit {
 
   loginForm = new FormGroup({
     login: new FormControl('', [Validators.required]),
-    password: new FormControl('', [Validators.required])
+    password: new FormControl('', [Validators.required]),
+    otp: new FormControl('')
   });
 
   connecting = true;
@@ -72,9 +68,12 @@ export class LoginComponent implements OnInit {
     return this.loginForm.get('password')
   }
 
+  get otp () {
+    return this.loginForm.get('otp')
+  }
+
   onSubmit (form: FormGroupDirective) {
     const formData = new FormData()
-    console.log(form.control.value)
 
     for (const key in form.control.value) {
       formData.append(key, form.control.get(key)?.value)
@@ -96,10 +95,11 @@ export class LoginComponent implements OnInit {
 
     const login = formData.get('login')
     const password = formData.get('password')
+    const otp = formData.get('otp')
 
     const query = gql`
-    mutation login($login: String!, $password: String!) {
-      user(login: $login, password: $password) {
+    mutation login($login: String!, $password: String!, $otp: String) {
+      user(login: $login, password: $password, otp: $otp) {
           username
           email
           mfa
@@ -111,7 +111,8 @@ export class LoginComponent implements OnInit {
       mutation: query,
       variables: {
         login,
-        password
+        password,
+        otp
       }
     }).subscribe(
       (response: any) => {
