@@ -102,6 +102,7 @@ export class LoginComponent implements OnInit {
       user(login: $login, password: $password) {
           username
           email
+          mfa
       }
     }
     `

@@ -22,10 +22,6 @@ import { createFolderComponent } from './createFolder.component'
 export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
 
-  files: IData[] = []
-
-  folders: IFolder[] = []
-
   hoveredElement?: string;
 
   pickedElements: Set<string> = new Set()
@@ -36,11 +32,20 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   displayedColumns = ['name', 'size', 'type', 'createdOn']
 
-  currentFolder: string = 'root'
-  currentPath: IFolder[] = [];
-
   getProgressState () {
     return this.FileService.stateProgress ? this.stateUploading : this.stateFixed
+  }
+
+  isFile(id: string) {
+    const element = this.FileService.dataSource.data.find(x => x.pubId === id)
+    if (!element) return false
+    return element.__typename === 'files'
+  }
+
+  isFolder(id: string) {
+    const element = this.FileService.dataSource.data.find(x => x.pubId === id)
+    if (!element) return false
+    return element.__typename === 'folders'
   }
 
   isItPicked (id: string) {
@@ -59,27 +64,27 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   clickOnFolder (folder: IFolder) {
-    if (folder.pubId === this.currentFolder) return
-    this.currentFolder = folder.pubId
+    if (folder.pubId === this.FileService.currentFolder) return
+    this.FileService.currentFolder = folder.pubId
 
-    const checkIfInCurrentPath = this.currentPath.findIndex(x => x.pubId === folder.pubId)
+    const checkIfInCurrentPath = this.FileService.currentPath.findIndex(x => x.pubId === folder.pubId)
     if (checkIfInCurrentPath > -1) {
-      this.currentPath = this.currentPath.slice(0, checkIfInCurrentPath + 1)
+      this.FileService.currentPath = this.FileService.currentPath.slice(0, checkIfInCurrentPath + 1)
     } else {
-      this.currentPath.push(folder)
+      this.FileService.currentPath.push(folder)
     }
 
     this.getData()
   }
 
   clearFolderPath () {
-    this.currentFolder = 'root'
-    this.currentPath = []
+    this.FileService.currentFolder = 'root'
+    this.FileService.currentPath = []
     this.getData()
   }
 
   returnToParentFolder () {
-    this.currentFolder = this.currentPath.pop()?.parent ?? 'root'
+    this.FileService.currentFolder = this.FileService.currentPath.pop()?.parent ?? 'root'
     this.getData()
   }
 
@@ -115,8 +120,8 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
         return
     }
 
-    const pubId = this.getID(this.pickedElements)
-    if (!pubId) return
+    const pubId = this.pickedElements.values().next().value
+    if (!this.isFile(pubId)) return
 
     this.apollo.watchQuery({
       query: gql`
@@ -143,7 +148,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
   createFolder () {
     const dialogRef = this.dialog.open(createFolderComponent, {
       data: {
-        folder: this.currentFolder
+        folder: this.FileService.currentFolder
       }
     })
 
@@ -162,32 +167,58 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!this.pickedElements) return
     const amount = this.pickedElements.size
     if (amount === 0) return
-    const elements = this.getIDs(this.pickedElements)
-    if (!elements.find(x => !x)) return
+    // const elements = this.getIDs(this.pickedElements)
+    // if (!elements.find(x => !x)) return
 
-    const res = confirm(`Do you really want to delete ${amount} files. This action is irreversible`)
+    const elements = [...this.pickedElements.values()]
+    const tmpData = this.FileService.dataSource.data.filter(x => elements.includes(x.pubId))
+    const folders = tmpData.filter(x => this.isFolder(x.pubId))
+    const files = tmpData.filter(x => this.isFile(x.pubId))
+
+    return
+
+    const res = confirm(`Do you really want to delete ${amount} element(s). This action is irreversible`)
     if (!res) return
 
-    this.cookieService.set('fileselection', JSON.stringify(elements))
-
-    this.http.delete(
-      `${environment.api}files/delete`,
-      {
-        reportProgress: true,
-        withCredentials: true
+    this.apollo.mutate({
+      mutation: gql`
+        mutation deleteElements($folders: [String]!, $files: [String]!) {
+          deleteFolders(folders: $folders)
+          deleteFiles(files: $files)
+        }
+      `,
+      variables: {
+        folders,
+        files
       }
-    ).subscribe(
-      (response) => {
-        this.snackBar.open(`${amount} files have been deleted`, 'Ok', {
-          duration: 10000
-        })
-
+    })
+    .subscribe(
+      (result: any) => {
+        this.snackBar.open('Elements deleted', 'OK')
         this.getData()
-      },
-      (error: HttpErrorResponse) => {
-        console.log(error)
       }
     )
+
+    // this.cookieService.set('fileselection', JSON.stringify(elements))
+
+    // this.http.delete(
+    //   `${environment.api}files/delete`,
+    //   {
+    //     reportProgress: true,
+    //     withCredentials: true
+    //   }
+    // ).subscribe(
+    //   (response) => {
+    //     this.snackBar.open(`${amount} files have been deleted`, 'Ok', {
+    //       duration: 10000
+    //     })
+
+    //     this.getData()
+    //   },
+    //   (error: HttpErrorResponse) => {
+    //     console.log(error)
+    //   }
+    // )
   }
 
   responseToBlob (response: Blob, file: string) {
@@ -274,7 +305,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   pickFile (event: MouseEvent, file: IData) {
-    const id = file.name
+    const id = file.pubId
     const size = file.size
     const ctrlKey = event.ctrlKey
     const metaKey = event.metaKey
@@ -302,7 +333,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
     this.pickedElementsTotalSize = 0
     this.FileService.stateProgress = 'query'
     this.FileService.dataQuery.refetch({
-      folder: this.currentFolder,
+      folder: this.FileService.currentFolder,
       username: user.username
     }).then(
       () => {
@@ -359,7 +390,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
       return
     }
 
-    form.append('folder', this.currentFolder ?? 'root')
+    form.append('folder', this.FileService.currentFolder ?? 'root')
 
     this.http.post(
       `${environment.api}files/upload`,

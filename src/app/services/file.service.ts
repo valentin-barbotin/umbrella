@@ -32,6 +32,9 @@ export class FileService {
   queryDataSubscription?: Subscription;
   dataSource = new MatTableDataSource<any>([]);
 
+  currentFolder: string = 'root'
+  currentPath: IFolder[] = [];
+
   calcUsedStorage () {
     return (this.sizeTotal / this.sizeLimit) * 100
   }

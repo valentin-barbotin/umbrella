@@ -36,7 +36,7 @@
   <p>
     <mat-toolbar class="bg-transparent text-gray-100">
       <span class="cursor-pointer" (click)="clearFolderPath()">Cloud drive</span>
-      <span class="cursor-pointer" (click)="clickOnFolder(folder)" *ngFor="let folder of currentPath">&nbsp;/ {{ folder.name }} </span>
+      <span class="cursor-pointer" (click)="clickOnFolder(folder)" *ngFor="let folder of FileService.currentPath">&nbsp;/ {{ folder.name }} </span>
       <span class="flex-auto"></span>
       <button (click)="createFolder()" mat-button>
         <mat-icon>create_new_folder</mat-icon>
@@ -49,7 +49,7 @@
     </mat-toolbar>
   </p>
   <div class="px-4">
-    <button mat-button *ngIf="this.currentFolder !== 'root'" (click)="returnToParentFolder()">
+    <button mat-button *ngIf="this.FileService.currentFolder !== 'root'" (click)="returnToParentFolder()">
       Retour
     </button>
   </div>
@@ -140,10 +140,10 @@
         (dblclick)="doubleClickOnElem(file)"
         [ngClass]="{
           'cursor-pointer': true,
-          'bg-dark2': !isItPicked(file.name),
+          'bg-dark2': !isItPicked(file.pubId),
           'text-gray-100': true,
-          'bg-gray-800': isItPicked(file.name),
-          'hover:bg-gray-700': !isItPicked(file.name)
+          'bg-gray-800': isItPicked(file.pubId),
+          'hover:bg-gray-700': !isItPicked(file.pubId)
         }"
         mat-row
         *matRowDef="let file; columns: displayedColumns"

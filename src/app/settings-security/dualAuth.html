@@ -1,14 +1,20 @@
 <div>
-    <h3>Activer l'authentification à deux facteurs</h3>
-    <div class="border rounded">
-        <qr-code value="https://www.google.fr/" level='H' [size]="290"></qr-code>
-    </div>  
-    <div class="mt-2">
-        <button
-        mat-raised-button
-        type="submit"
-        class="border">
-            Suivant
-        </button>
-    </div>
+  <h3>Activer l'authentification à deux facteurs</h3>
+  <div class="border rounded">
+    <qrcode [qrdata]="data.token" [errorCorrectionLevel]="'M'"></qrcode>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" #form="ngForm" [formGroup]="otp">
+    <mat-label>Code</mat-label>
+    <input formControlName="code" matInput type="text" />
+
+    <button
+      mat-raised-button
+      type="submit"
+      [disabled]="otp.invalid"
+      class="mt-50 border"
+    >
+      {{ otp.invalid ? 'Waiting' : 'Valider' }}
+    </button>
+  </form>
 </div>

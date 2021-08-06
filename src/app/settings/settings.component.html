@@ -1,31 +1,38 @@
 <div class="flex flex-col justify-between w-1/6">
-    <mat-tree class="bg-dark1" [dataSource]="dataSource" [treeControl]="treeControl">
+  <mat-tree
+    class="bg-dark1"
+    [dataSource]="dataSource"
+    [treeControl]="treeControl"
+  >
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+      <button mat-icon-button disabled></button>
+      <button mat-button>
+        {{ node.name }}
+      </button>
+    </mat-tree-node>
 
-        <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
-          <button mat-icon-button disabled></button>
-          <button mat-button>
-            {{node.name}}
-          </button>
-        </mat-tree-node>
-
-        <mat-tree-node class="text-white" *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
-          <button mat-icon-button matTreeNodeToggle
-                  (click)="mode = node.id"
-                  >
-            <mat-icon class="mat-icon-rtl-mirror text-white">
-              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-            </mat-icon>
-          </button>
-          <span (click)="mode = node.id"> {{node.name}} </span>
-        </mat-tree-node>
-      </mat-tree>
+    <mat-tree-node
+      class="text-white"
+      *matTreeNodeDef="let node; when: hasChild"
+      matTreeNodePadding
+    >
+      <button mat-icon-button matTreeNodeToggle (click)="mode = node.id">
+        <mat-icon class="mat-icon-rtl-mirror text-white">
+          {{ treeControl.isExpanded(node) ? "expand_more" : "chevron_right" }}
+        </mat-icon>
+      </button>
+      <span (click)="mode = node.id"> {{ node.name }} </span>
+    </mat-tree-node>
+  </mat-tree>
 </div>
 
 <div class="flex flex-grow flex-col h-full bg-dark2">
-    <div [ngSwitch]="mode">
-      <app-settings-account *ngSwitchCase="'account'"></app-settings-account>
-      <app-settings-subscription *ngSwitchCase="'abonnement'"></app-settings-subscription>
-      <app-settings-security *ngSwitchCase="'security'"></app-settings-security>
-      <div *ngSwitchDefault>Aucune selection</div>
-    </div>
+  <div [ngSwitch]="mode">
+    <app-settings-account *ngSwitchCase="'account'"></app-settings-account>
+    <app-settings-subscription
+      *ngSwitchCase="'abonnement'"
+    ></app-settings-subscription>
+    <app-settings-security *ngSwitchCase="'security'"></app-settings-security>
+    <div *ngSwitchDefault>Aucune selection</div>
+  </div>
 </div>

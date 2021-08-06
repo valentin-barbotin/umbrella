@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, Inject, OnInit } from '@angular/core'
 import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { Apollo, gql } from 'apollo-angular'
 import { User } from '../user'
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
-import { QRCodeModule } from 'angular2-qrcode'
+import { UserService } from '../services/user.service'
+import { MatSlideToggleChange } from '@angular/material/slide-toggle'
 export interface DialogData {
   animal: string;
   name: string;
@@ -16,12 +17,12 @@ export interface DialogData {
 })
 
 export class SettingsSecurityComponent implements OnInit {
-  openDialog (): void {
-    const dialogRef = this.dialog.open(dualAuth, { panelClass: 'custom-dialog-container' })
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed')
-    })
+  getMFA (event: MatSlideToggleChange): void {
+    if (event.checked) {
+      this.setupOTP()
+    } else {
+      this.UserService.removeOTP()
+    }
   }
 
   changePwdForm = new FormGroup({
@@ -37,7 +38,8 @@ export class SettingsSecurityComponent implements OnInit {
   changePwd = 'Changer le mot de passe'
   changeMail = "Changer l'adresse mail"
   state = 'ready'
-  dualAuth = 'openDialog()'
+
+  public MFAActivated: boolean = false
 
   get password1 () {
     return this.changePwdForm.get('password1')
@@ -58,11 +60,8 @@ export class SettingsSecurityComponent implements OnInit {
   changePassword () {
     const password1 = this.password1?.value
     const password2 = this.password2?.value
-    const userStorage = localStorage.getItem('user')
 
-    if (!userStorage) return
-
-    const user = JSON.parse(userStorage) as User
+    const user = this.UserService.User
     if (!user) return
 
     if (!password1 || !password2) {
@@ -107,11 +106,8 @@ export class SettingsSecurityComponent implements OnInit {
   changeEmail () {
     const email1 = this.email1?.value
     const email2 = this.email2?.value
-    const userStorage = localStorage.getItem('user')
 
-    if (!userStorage) return
-
-    const user = JSON.parse(userStorage) as User
+    const user = this.UserService.User
     if (!user) return
 
     if (!email1 || !email2) {
@@ -166,13 +162,29 @@ export class SettingsSecurityComponent implements OnInit {
     )
   }
 
+  async setupOTP () {
+    const token = await this.UserService.generateOTP()
+    const diag = this.dialog.open(dualAuth, { panelClass: 'custom-dialog-container', data: { token } })
+    this.snackBar.open('Scan this QR Code with your authentificator app on your smartphone, and enter it to complete the activation', 'OK', {
+      duration: 5000
+    })
+
+    diag.afterClosed().subscribe(result => {
+      console.log(result)
+      this.MFAActivated = result
+      console.log('The dialog was closed')
+    })
+  }
+
   // eslint-disable-next-line no-useless-constructor
   constructor (
     private apollo: Apollo,
     private snackBar: MatSnackBar,
-    public dialog: MatDialog
-
-  ) { }
+    public dialog: MatDialog,
+    private UserService: UserService
+  ) {
+    this.MFAActivated = this.UserService.User?.mfa ?? false
+  }
 
   ngOnInit (): void {
   }
@@ -184,24 +196,50 @@ export class SettingsSecurityComponent implements OnInit {
   styleUrls: ['./settings-security.component.sass']
 })
 export class dualAuth {
-  dualAuthForm = new FormGroup({
-  });
+  otp = new FormGroup({
+    code: new FormControl('', [Validators.required, Validators.minLength(6)])
+  })
 
-  // item = [{
-  //   'test' : "https://www.google.fr/"
-  // }]
+  get code () {
+    return this.otp.get('code')
+  }
 
-  // qrInfo = JSON.stringify(this.item);
+  activated: boolean = false
 
   // eslint-disable-next-line no-useless-constructor
   constructor (
     private snackBar: MatSnackBar,
-    // private http: HttpClient,
-    public dialogRef: MatDialogRef<dualAuth>
-    // @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+    public dialogRef: MatDialogRef<dualAuth>,
+    public dialog: MatDialog,
+    private UserService: UserService,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
+    this.dialogRef.backdropClick().subscribe(() => {
+      console.log('background')
+      this.dialogRef.close(this.activated)
+    })
+  }
+
+  async onSubmit () {
+    if (this.otp.invalid) return
+    if (!this.code) return
+    const code: string = this.code.value
+    if (!code) return
+    const valid = await this.UserService.checkOTP(code)
+    let msg = 'Code validated'
+    if (!valid) {
+      msg = 'Code invalid'
+      this.code.setValue('')
+    } else {
+      this.UserService.validateOTP()
+      this.dialogRef.close(true)
+    }
+    this.snackBar.open(msg, 'OK', {
+      duration: 5000
+    })
+  }
 
   onNoClick (): void {
-    this.dialogRef.close()
+    console.log('no click')
   }
 }

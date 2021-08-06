@@ -60,7 +60,7 @@ import { DashboardComponent } from './dashboard/dashboard.component'
 import { LogoutComponent } from './logout/logout.component'
 
 import { CookieService } from 'ngx-cookie-service'
-import { BytesConverterPipe } from './bytes-converter.pipe'
+import { BytesConverterPipe } from './pipes/bytes-converter.pipe'
 import { MimeNamePipe } from './mime-name.pipe'
 import { httpInterceptorProviders } from './http-interceptors'
 import { GraphQLModule } from './graphql.module'
@@ -68,7 +68,7 @@ import { SettingsComponent } from './settings/settings.component'
 import { SettingsAccountComponent, delAccount } from './settings-account/settings-account.component'
 import { dualAuth, SettingsSecurityComponent } from './settings-security/settings-security.component'
 import { SettingsSubscriptionComponent } from './settings-subscription/settings-subscription.component'
-import { QRCodeModule } from 'angular2-qrcode'
+import { QRCodeModule } from 'angularx-qrcode';
 // export function HttpLoaderFactory(http: HttpClient) {
 //   return new TranslateHttpLoader(http);
 // }

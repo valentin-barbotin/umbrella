@@ -4,4 +4,5 @@ export interface User {
     active: boolean;
     date: Date;
     container?: string;
+    mfa: boolean;
 }

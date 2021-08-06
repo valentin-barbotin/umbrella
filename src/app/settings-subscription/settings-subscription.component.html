@@ -1,73 +1,81 @@
 <div class="border bg-dark1 mx-auto w-2/3 mt-24 rounded-lg text-white">
-    <div class="flex justify-around mx-4 mt-4">
-        <div>
-            <mat-progress-spinner [color]="'#505050'" [mode]="'determinate'" [value]="50">
-            </mat-progress-spinner>
-            <h3>Taille = {{ 261565161 | bytesConverter }} </h3>
-        </div>
-        <div>
-            <mat-progress-spinner [color]="'#505050'" [mode]="'determinate'" [value]="50">
-            </mat-progress-spinner>
-            <h3>Taille = {{ 261565161 | bytesConverter }} </h3>
-        </div>
-        <div class="mt-12">
-            <button mat-raised-button type="submit" class="border">
-                Prendre un abonnement
-            </button>
-        </div>
+  <div class="flex justify-around mx-4 mt-4">
+    <div>
+      <mat-progress-spinner
+        [color]="'#505050'"
+        [mode]="'determinate'"
+        [value]="50"
+      >
+      </mat-progress-spinner>
+      <h3>Taille = {{ 261565161 | bytesConverter }}</h3>
     </div>
+    <div>
+      <mat-progress-spinner
+        [color]="'#505050'"
+        [mode]="'determinate'"
+        [value]="50"
+      >
+      </mat-progress-spinner>
+      <h3>Taille = {{ 261565161 | bytesConverter }}</h3>
+    </div>
+    <div class="mt-12">
+      <button mat-raised-button type="submit" class="border">
+        Prendre un abonnement
+      </button>
+    </div>
+  </div>
 </div>
 
 <div class="flex border-b-2 mx-auto w-2/3 mt-16 text-white">
-    <div class="w-1/3">
-        <h2>Type de compte</h2>
+  <div class="w-1/3">
+    <h2>Type de compte</h2>
+  </div>
+  <div class="w-2/3">
+    <div class="flex justify-between mb-12 border-b-2">
+      <div>
+        <h2>Abonnement</h2>
+      </div>
+      <div class="mb-7 mt-2">
+        <p class="text-green-500">Gratuit</p>
+      </div>
     </div>
-    <div class="w-2/3">
-        <div class="flex justify-between mb-12 border-b-2">
-            <div>
-                <h2>Abonnement</h2>
-            </div>
-            <div class="mb-7 mt-2">
-               <p class="text-green-500">Gratuit</p>
-            </div>
+
+    <div class="flex justify-between mb-12 border-b-2">
+      <div>
+        <h2>Espace de stockage</h2>
+      </div>
+      <div class="mb-7 mt-2">
+        <div class="mb-2">
+          <mat-progress-bar
+            *ngIf="FileService.stateProgress == 'determinate'"
+            mode="determinate"
+            value="{{ FileService.calcUsedStorage() }}"
+          ></mat-progress-bar>
         </div>
-        
-        <div class="flex justify-between mb-12 border-b-2">
-            <div>
-                <h2>Espace de stockage</h2>
-            </div>
-            <div class="mb-7 mt-2">
-                <div class="mb-2">
-                    <mat-progress-bar
-                        *ngIf="FileService.stateProgress == 'determinate'"
-                        mode="determinate"
-                        value="{{ FileService.calcUsedStorage() }}"
-                    ></mat-progress-bar>
-                </div>
-                <span class="text-gray-100">
-                    {{ FileService.sizeTotal | bytesConverter }} /
-                    {{ FileService.sizeLimit | bytesConverter }} (
-                    {{ FileService.calcUsedStorage().toFixed(0) }} % )
-                  </span>
-            </div>
-        </div>
-        <div class="flex justify-end mb-12">
-            <button mat-raised-button type="submit" class="border">
-                Prendre un abonnement
-            </button>
-        </div>
+        <span class="text-gray-100">
+          {{ FileService.sizeTotal | bytesConverter }} /
+          {{ FileService.sizeLimit | bytesConverter }} (
+          {{ FileService.calcUsedStorage().toFixed(0) }} % )
+        </span>
+      </div>
     </div>
+    <div class="flex justify-end mb-12">
+      <button mat-raised-button type="submit" class="border">
+        Prendre un abonnement
+      </button>
+    </div>
+  </div>
 </div>
 
 <div class="flex justify-between mx-auto w-2/3 mt-16 text-white">
-    <div class="w-1/3">
-        <h2>Solde du compte</h2>
-    </div>
+  <div class="w-1/3">
+    <h2>Solde du compte</h2>
+  </div>
 
-    <div class="justify-end mb-12 mt-2"> 
-        <p class="text-right">0,00€</p>
-        <button mat-raised-button type="submit" class="border">
-            Alimenter le compte
-        </button>
-    </div>
+  <div class="justify-end mb-12 mt-2">
+    <p class="text-right">0,00€</p>
+    <button mat-raised-button type="submit" class="border">
+      Alimenter le compte
+    </button>
+  </div>
 </div>
