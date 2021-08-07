@@ -68,7 +68,7 @@ import { SettingsComponent } from './settings/settings.component'
 import { SettingsAccountComponent, delAccount } from './settings-account/settings-account.component'
 import { dualAuth, SettingsSecurityComponent } from './settings-security/settings-security.component'
 import { SettingsSubscriptionComponent } from './settings-subscription/settings-subscription.component'
-import { QRCodeModule } from 'angularx-qrcode';
+import { QRCodeModule } from 'angularx-qrcode'
 // export function HttpLoaderFactory(http: HttpClient) {
 //   return new TranslateHttpLoader(http);
 // }
