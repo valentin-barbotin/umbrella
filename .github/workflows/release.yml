@@ -1,0 +1,67 @@
+name: Release and deploy
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  
+  workflow_dispatch:
+  
+env:
+  REGISTRY: kazuh.azurecr.io
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: 📦 Cache
+      uses: actions/cache@v2.1.6
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+
+    - name: 🕹️ Add git tool
+      uses: srt32/git-actions@v0.0.3
+
+    - name: ⚙️ Git Version
+      id: version
+      uses: codacy/git-version@2.2.0
+
+    - name: ⚙️ Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        registry-url: 'https://registry.npmjs.org'
+        
+    - name: Azure Container Registry Login
+      uses: Azure/docker-login@v1
+      with:
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        login-server: kazuh.azurecr.io
+
+    - name: 🏗️ Build docker image
+      uses: docker/build-push-action@v2.6.1
+      with:
+        context: .
+        tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ steps.version.outputs.version }}
+        cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository }}
+        cache-to: type=inline
+        push: true
+        
+    - name: 📘 Release Drafter
+      uses: release-drafter/release-drafter@v5.15.0
+      with:
+        version: ${{ steps.version.outputs.version }}
+        publish: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

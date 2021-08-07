@@ -1,6 +1,6 @@
 FROM node:16-alpine as angular
 WORKDIR /usr/src/app
-COPY ["package*", "./"]
+COPY package* .
 RUN npm install
 COPY . .
 RUN npm i -g @angular/cli
