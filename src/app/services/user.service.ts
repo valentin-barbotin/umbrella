@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core'
-import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { Apollo, gql } from 'apollo-angular'
 import { User } from '../user'
@@ -10,8 +9,8 @@ import { User } from '../user'
 export class UserService {
   // eslint-disable-next-line no-useless-constructor
   constructor (
-    private snackBar: MatSnackBar,
-    private apollo: Apollo
+    private readonly snackBar: MatSnackBar,
+    private readonly apollo: Apollo
   ) { }
 
   public get User () {
@@ -20,6 +19,28 @@ export class UserService {
       return JSON.parse(user) as User
     }
     return null
+  }
+
+  async createUser (variables: Object) {
+    const query = gql`
+    mutation createUser($username: String!, $email: String!, $password1: String!, $password2: String!) {
+      createUser(username: $username, email: $email, password1: $password1, password2: $password2)
+    }`
+
+    return new Promise<number>((resolve, reject) => {
+      this.apollo.mutate({
+        mutation: query,
+        variables
+      }).subscribe(
+        (response: any) => {
+          resolve(response.data.createUser)
+        },
+        (error) => {
+          reject(error)
+          console.log(error)
+        }
+      )
+    })
   }
 
   checkOTP (code: string) {

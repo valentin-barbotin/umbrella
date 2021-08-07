@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core'
 import { FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms'
-import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router'
-import { environment } from '../../environments/environment'
+import { UserService } from '../services/user.service'
+import { MatSnackBar } from '@angular/material/snack-bar'
 
 @Component({
   selector: 'app-register',
@@ -28,53 +28,50 @@ export class RegisterComponent implements OnInit {
   hide1 = true;
   hide2 = true;
 
-  register (form: FormGroupDirective) {
+  async register (form: FormGroupDirective) {
     if (['registred', 'failed'].includes(this.state)) return
 
     if (this.password1?.value !== this.password2?.value) return
 
-    function failed (component: RegisterComponent) {
-      component.authButton = 'Registration failed'
-      component.state = 'failed'
-      setTimeout(() => {
-        component.authButton = 'Register'
-        component.state = 'ready'
-      }, 3000)
+    const variables: {[x: string]: any; } = {}
+    for (const x of form.directives) {
+      const obj = {
+        [x.name ?? '']: x.value
+      }
+      Object.assign(variables, obj)
     }
 
-    // return
-    this.http.post(
-      `${environment.api}users/login`,
-      form,
-      {
-        // headers: new HttpHeaders(this.CrudService.getHeaders()),
-        reportProgress: true,
-        withCredentials: true
+    const created = await this.UserService.createUser(variables)
+
+    if (created === 1) {
+      this.snackBar.open('User created', 'OK', {
+        duration: 5000
+      })
+      this.state = 'registred'
+      this.authButton = 'Registred successfully !'
+      setTimeout(() => {
+        this.Router.navigate(['/'])
+      }, 3000)
+    } else {
+      if (created === -2) {
+        this.snackBar.open('User already exists', 'OK', {
+          duration: 5000
+        })
       }
-    ).subscribe(
-      (response) => {
-        if (response) {
-          localStorage.setItem('user', JSON.stringify(response))
-          this.state = 'registred'
-          this.authButton = 'Registred successfully !'
-          setTimeout(() => {
-            this.Router.navigate(['/'])
-          }, 3000)
-        } else {
-          failed(this)
-        }
-      },
-      (error) => {
-        console.log(error)
-        failed(this)
-      }
-    )
+      this.authButton = 'Registration failed'
+      this.state = 'failed'
+      setTimeout(() => {
+        this.authButton = 'Register'
+        this.state = 'ready'
+      }, 3000)
+    }
   }
 
   // eslint-disable-next-line no-useless-constructor
   constructor (
-    private http: HttpClient,
-    private Router: Router
+    private UserService: UserService,
+    private Router: Router,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit (): void {
