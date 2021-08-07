@@ -75,5 +75,10 @@ export class RegisterComponent implements OnInit {
   ) { }
 
   ngOnInit (): void {
+    const exist = localStorage.getItem('user')
+    if (exist) {
+      alert('Already connected')
+      this.Router.navigate(['/'])
+    }
   }
 }
