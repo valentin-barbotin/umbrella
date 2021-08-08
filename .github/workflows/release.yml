@@ -35,8 +35,6 @@ jobs:
     - name: ⚙️ Git Version
       id: version
       uses: codacy/git-version@2.2.0
-      with:
-        prefix: v
 
     - name: ⚙️ Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
