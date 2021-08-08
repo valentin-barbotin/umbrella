@@ -1,36 +1,65 @@
-<div class="w-full max-w-xs mx-auto">
+<div class="w-5/6 sm:w-2/5 lg:w-1/5 sm:mt-20 mx-auto">
   <form
     #form="ngForm"
     (ngSubmit)="onSubmit(form)"
     [formGroup]="loginForm"
     class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
   >
-    <mat-form-field appearance="standard" class="w-full">
-      <mat-label>Login</mat-label>
-      <input formControlName="login" matInput type="text"/>
-      <mat-error *ngIf="login?.errors?.required">Login required</mat-error>
-    </mat-form-field>
+    <h2 class="text-center">Connexion</h2>
+    <div class="flex flex-col mx-auto my-5">
+      <mat-form-field appearance="standard">
+        <mat-label>Login</mat-label>
+        <input formControlName="login" matInput type="text" />
+        <mat-error *ngIf="login?.errors?.required">Login required</mat-error>
+      </mat-form-field>
 
-    <mat-form-field appearance="standard" class="w-full">
-      <mat-label>Password</mat-label>
-      <input [type]="hide1 ? 'password' : 'text'" formControlName="password" matInput/>
-      <button (click)="hide1 = !hide1" matSuffix mat-icon-button type="button">
-        <mat-icon>{{hide1 ? 'visibility_off' : 'visibility'}}</mat-icon>
-      </button>
-      <mat-error *ngIf="password?.errors?.required"
-        >Password required</mat-error
-      >
-    </mat-form-field>
+      <mat-form-field appearance="standard">
+        <mat-label>Password</mat-label>
+        <input
+          [type]="hide1 ? 'password' : 'text'"
+          formControlName="password"
+          matInput
+        />
+        <button
+          (click)="hide1 = !hide1"
+          matSuffix
+          mat-icon-button
+          type="submit"
+        >
+          <mat-icon>{{ hide1 ? "visibility_off" : "visibility" }}</mat-icon>
+        </button>
+        <mat-error *ngIf="password?.errors?.required"
+          >Password required</mat-error
+        >
+      </mat-form-field>
 
-    <mat-form-field appearance="standard" class="w-full">
-      <mat-label>2FA (if activated)</mat-label>
-      <input formControlName="otp" matInput type="number"/>
-    </mat-form-field>
+      <mat-form-field appearance="standard">
+        <mat-label>2FA (if activated)</mat-label>
+        <input
+          formControlName="otp"
+          matInput
+          maxlength="6"
+          inputmode="numeric"
+          type="text"
+        />
+        <mat-error *ngIf="otp?.errors?.pattern">Invalid 2FA pattern</mat-error>
+      </mat-form-field>
 
-    <h4>
-      <a class="my-3 cursor-pointer hover:text-indigo-700 transition-colors hover:underline" (click)="openDialog()" >Reset password</a>
-    </h4>
-    
+      <h4>
+        <a
+          class="
+            my-3
+            cursor-pointer
+            hover:text-indigo-700
+            transition-colors
+            hover:underline
+          "
+          (click)="openDialog()"
+          >Reset password</a
+        >
+      </h4>
+    </div>
+
     <button
       mat-raised-button
       type="submit"
@@ -38,8 +67,23 @@
       [disabled]="loginForm.invalid"
       class="mt-50 border"
     >
-      {{ loginForm.invalid ? 'Waiting' : authButton }}
+      {{ loginForm.invalid ? "Waiting" : authButton }}
     </button>
   </form>
 
+  <div class="bg-white shadow-md rounded px-8 py-2 mb-4">
+    <p style="margin-bottom: 0 !important" class="text-center py-3">
+      Nouveau sur Umbrella ?
+      <a
+        routerLink="/register"
+        class="
+          text-blue-400
+          hover:text-indigo-700
+          transition-colors
+          hover:underline
+        "
+        >Créer un compte</a
+      >
+    </p>
+  </div>
 </div>

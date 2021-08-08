@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core'
 import { FormGroup, FormControl, Validators, FormGroupDirective } from '@angular/forms'
-import { HttpClient } from '@angular/common/http'
+import { HttpClient, HttpErrorResponse } from '@angular/common/http'
 import { environment } from '../../environments/environment'
 import { Router } from '@angular/router'
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
@@ -46,7 +46,7 @@ export class LoginComponent implements OnInit {
   loginForm = new FormGroup({
     login: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
-    otp: new FormControl('')
+    otp: new FormControl('', [Validators.maxLength(6), Validators.minLength(6), Validators.pattern('^[0-9]*$')])
   });
 
   connecting = true;
@@ -129,6 +129,7 @@ export class LoginComponent implements OnInit {
       },
       (error) => {
         console.log(error)
+        alert(JSON.stringify(error))
         failed(this)
       }
     )
@@ -172,7 +173,6 @@ export class resetPassword {
     if (form.invalid) return
 
     const formData = new FormData()
-    console.log(form.control.value)
 
     for (const key in form.control.value) {
       formData.append(key, form.control.get(key)?.value)
@@ -188,12 +188,12 @@ export class resetPassword {
       }
     ).subscribe(
       (response) => {
-        console.log('resp')
-        this.snackBar.open('New password is ' + response, 'osef', {
+        this.snackBar.open('New password is ' + response, 'OK', {
           duration: 10000
         })
       },
-      (error) => {
+      (error: HttpErrorResponse) => {
+        alert(JSON.stringify(error))
         console.log(error)
       }
     )

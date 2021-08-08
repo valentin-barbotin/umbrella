@@ -1,25 +1,71 @@
-<div [ngSwitch]="mode" class="flex h-full">
-    <div style="width: 5%">
-        <div class="bg-dark2 w-full h-full flex justify-start flex-col p-2">
-          <img
-            src="/assets/images/logopa.png"
-            class="mx-auto"
-            width="50px"
-            height="50px"
-          />
-          <button (click)="mode = 'files'" class="w-full" mat-button>
-            <mat-icon style="width: 50px; height: 50px;" class="text-gray-100 text-justify text-4xl mx-auto my-4">folder</mat-icon>
-          </button>
-          <button (click)="mode = 'settings'" class="w-full" mat-button>
-            <mat-icon style="width: 50px; height: 50px;" class="text-gray-100 text-justify text-4xl mx-auto my-4">settings</mat-icon>
-          </button>
+<div [ngSwitch]="mode" class="flex-col sm:flex-row flex h-full">
+  <div class="flex flex-row sm:flex-col">
+    <div class="bg-dark2 w-full h-full flex flex-row sm:flex-col sm:justify-start p-2">
 
-        </div>
+      <button
+        class="my-2 mr-3 sm:mr-0"
+        matRipple
+        [matRippleCentered]="false"
+        [matRippleDisabled]="false"
+        [matRippleUnbounded]="false"
+        [matRippleRadius]="0"
+        [matRippleColor]="''"
+      >
+        <img
+        src="/assets/images/logopa.png"
+          class="mx-auto"
+          width="50px"
+          height="50px"
+        />
+      </button>
+
+      <button
+        class="my-2 mr-3 sm:mr-0"
+        (click)="mode = 'files'"
+        matRipple
+        [matRippleCentered]="false"
+        [matRippleDisabled]="false"
+        [matRippleUnbounded]="false"
+        [matRippleRadius]="0"
+        [matRippleColor]="''"
+      >
+        <img
+          src="../assets/icons/folder_white_48dp.svg"
+          class="mx-auto"
+          width="50px"
+          height="50px"
+        />
+      </button>
+
+      <button
+        class="my-2 mr-3 sm:mr-0"
+        (click)="mode = 'settings'"
+        matRipple
+        [matRippleCentered]="false"
+        [matRippleDisabled]="false"
+        [matRippleUnbounded]="false"
+        [matRippleRadius]="0"
+        [matRippleColor]="''"
+      >
+        <img
+        src="../assets/icons/manage_accounts_white_48dp.svg"
+          class="mx-auto"
+          width="50px"
+          height="50px"
+        />
+      </button>
+      
     </div>
+  </div>
 
-    
-      <app-files *ngSwitchCase="'files'" class="flex flex-row h-full w-full"></app-files>
-      <app-settings *ngSwitchCase="'settings'" class="flex flex-row h-full w-full"></app-settings>
-      <!-- <div *ngSwitchCase="expression">output</div> -->
-      <!-- <div *ngSwitchDefault>output2</div> -->
+  <app-files
+    *ngSwitchCase="'files'"
+    class="flex flex-col-reverse sm:flex-row h-full w-full"
+  ></app-files>
+  <app-settings
+    *ngSwitchCase="'settings'"
+    class="flex flex-col sm:flex-row h-full w-full"
+  ></app-settings>
+  <!-- <div *ngSwitchCase="expression">output</div> -->
+  <!-- <div *ngSwitchDefault>output2</div> -->
 </div>

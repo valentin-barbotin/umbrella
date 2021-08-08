@@ -1,9 +1,9 @@
-<div class="flex flex-col justify-between w-1/6">
+<div class="flex flex-col justify-between w-full sm:w-1/6">
     <div>
     </div>
 
-    <div class="w-full mx-auto border-t px-5">
-      <span class="text-gray-100">Gratuit</span>
+    <div class="flex flex-col sm:border-t border-t-0 px-5">
+      <h4 class="text-gray-100 mb-0">Gratuit</h4>
       <div class="my-2">
         <mat-progress-bar
           mode="determinate"
@@ -24,17 +24,17 @@
         ></mat-progress-bar>
       </div>
 
-      <span class="text-gray-100">
+      <h4 class="text-gray-100 mb-0">
         {{ FileService.sizeTotal | bytesConverter }} /
         {{ FileService.sizeLimit | bytesConverter }} (
         {{ FileService.calcUsedStorage().toFixed(0) }} % )
-      </span>
+      </h4>
     </div>
 </div>
 <div class="flex flex-grow flex-col h-full bg-dark2">
   <input multiple (change)="uploadFile(upload)" hidden #upload type="file" />
-  <p>
-    <mat-toolbar class="bg-transparent text-gray-100">
+  <p class="hidden sm:block">
+    <mat-toolbar class="bg-transparent text-gray-100 flex">
       <span class="cursor-pointer" (click)="clearFolderPath()">Cloud drive</span>
       <span class="cursor-pointer" (click)="clickOnFolder(folder)" *ngFor="let folder of FileService.currentPath">&nbsp;/ {{ folder.name }} </span>
       <span class="flex-auto"></span>
@@ -48,6 +48,15 @@
       </button>
     </mat-toolbar>
   </p>
+  <div class="flex sm:hidden">
+    <button (click)="createFolder()" mat-button>
+      <mat-icon class="text-white">create_new_folder</mat-icon>
+    </button>
+    <button (click)="upload.click()" mat-button>
+      <mat-icon class="text-white">file_upload</mat-icon>
+    </button>
+  </div>
+
   <div class="px-4">
     <button mat-button *ngIf="this.FileService.currentFolder !== 'root'" (click)="returnToParentFolder()">
       Retour

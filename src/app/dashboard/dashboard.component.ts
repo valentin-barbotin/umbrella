@@ -21,9 +21,9 @@ export class DashboardComponent implements OnInit {
 
   constructor (
     private UserService: UserService,
-    private Router: Router,
     private http: HttpClient,
-    public FileService: FileService
+    public FileService: FileService,
+    private Router: Router
   ) {
     this.http.get(
       `${environment.api}users/check`,
@@ -33,15 +33,10 @@ export class DashboardComponent implements OnInit {
       }
     ).subscribe(
       (response) => {
-        console.log('got a response from users check')
       },
       (error: HttpErrorResponse) => {
         const user = localStorage.getItem('user')
-        console.log('check user on error')
-        console.log(user)
         if (error.status === 401 || !user) {
-          console.log('remove storage and redirect')
-
           localStorage.removeItem('user')
           this.Router.navigate(['/'])
         }
