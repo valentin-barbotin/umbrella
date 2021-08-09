@@ -1,7 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { environment } from '../environments/environment';
-import { CrudService } from './services/crud.service';
+import { Component } from '@angular/core'
+import { Router } from '@angular/router'
 
 @Component({
   selector: 'app-root',
@@ -9,11 +7,11 @@ import { CrudService } from './services/crud.service';
   styleUrls: ['./app.component.sass']
 })
 export class AppComponent {
-  title = 'umbrella';
+  title = 'umbrella'
 
-  constructor(
-    private http: HttpClient,
-    private CrudService: CrudService,
-  ) {}
-
+  // eslint-disable-next-line no-useless-constructor
+  constructor (
+    public readonly router: Router
+  ) {
+  }
 }

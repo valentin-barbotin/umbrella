@@ -1,6 +1,7 @@
 import { Injectable, ViewChild } from '@angular/core'
 import { MatSort } from '@angular/material/sort'
 import { MatTableDataSource } from '@angular/material/table'
+import { Router } from '@angular/router'
 import { Apollo, gql, QueryRef } from 'apollo-angular'
 import { Subscription } from 'rxjs'
 import { IData } from '../interfaces/file'
@@ -50,10 +51,14 @@ export class FileService {
 
   constructor (
     private apollo: Apollo,
-    private UserService: UserService
+    private UserService: UserService,
+    private router: Router
   ) {
     const user = this.UserService.User
-    if (!user) return
+    if (!user) {
+      router.navigate(['/login'])
+      return
+    }
     const GET_DATA_QUERY = gql`
       query datas($folder: String, $username: String) {
           folders(folder: $folder) {
