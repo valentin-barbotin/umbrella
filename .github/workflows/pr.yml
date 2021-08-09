@@ -1,7 +1,7 @@
-name: Release and deploy
+name: Pull request
 
 on:
-  push:
+  pull_request:
     branches: [ master ]
   
   workflow_dispatch:
@@ -30,36 +30,17 @@ jobs:
         path: ~/.npm
         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
-    - name: 🕹️ Git Version
-      id: version
-      uses: codacy/git-version@2.2.0
-
     - name: ⚙️ Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
         registry-url: 'https://registry.npmjs.org'
         
-    - name: Azure Container Registry Login
-      uses: Azure/docker-login@v1
-      with:
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
-        login-server: kazuh.azurecr.io
-
     - name: 🏗️ Build docker image
       uses: docker/build-push-action@v2.6.1
       with:
         context: .
-        tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ steps.version.outputs.version }}
+        tags: ${{ env.REGISTRY }}/${{ github.repository }}:pull-request
         cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository }}
         cache-to: type=inline
-        push: true
-        
-    - name: 📘 Release Drafter
-      uses: release-drafter/release-drafter@v5.15.0
-      with:
-        version: ${{ steps.version.outputs.version }}
-        publish: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        push: false
