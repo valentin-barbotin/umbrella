@@ -100,7 +100,7 @@ export class FileService {
         if (result.data) {
           this.files = result.data.files
           this.folders = result.data.folders
-          this.sizeTotal = result.data.storageUsed
+          this.sizeTotal = (result.data.storageUsed > 0) ? result.data.storageUsed : 0
           this.sizeLimit = result.data.storageMax
           this.updateDataSource()
         }
