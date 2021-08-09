@@ -6,7 +6,6 @@ import bytes from 'bytes'
 })
 export class BytesConverterPipe implements PipeTransform {
   transform (value: number, ...args: any[]): any {
-    if (!value) return ''
     return bytes(value, {
       unitSeparator: ' '
     })
