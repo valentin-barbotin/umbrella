@@ -188,7 +188,17 @@ export class resetPassword {
       }
     ).subscribe(
       (response) => {
-        this.snackBar.open('New password is ' + response, 'OK', {
+        let msg = ''
+        switch (response) {
+          case 'User not found':
+            msg = 'User not found'
+            break
+          default:
+            msg = 'New password is ' + response
+            break
+        }
+
+        this.snackBar.open(msg, 'OK', {
           duration: 10000
         })
       },
