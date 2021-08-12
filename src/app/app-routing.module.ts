@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 import { AppComponent } from './app.component'
+import { AuthGuard } from './auth.guard'
 import { DashboardComponent } from './dashboard/dashboard.component'
 import { FilesComponent } from './files/files.component'
 import { LoginComponent } from './login/login.component'
@@ -15,7 +16,8 @@ const routes: Routes = [
     children: [
       { path: 'files', component: FilesComponent },
       { path: 'settings', component: SettingsComponent }
-    ]
+    ],
+    canActivate: [AuthGuard]
   },
   { path: 'login', component: LoginComponent },
   { path: 'logout', component: LogoutComponent },
