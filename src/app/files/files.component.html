@@ -3,7 +3,7 @@
     <div>
     </div>
 
-    <div class="flex flex-col sm:border-t border-t-0 px-5">
+    <div *ngIf="FileService.sizeLimit" class="flex flex-col sm:border-t border-t-0 px-5">
       <h4 class="text-gray-100 mb-0">Gratuit</h4>
       <div class="my-2">
         <mat-progress-bar

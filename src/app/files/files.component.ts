@@ -217,19 +217,23 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
     // )
   }
 
-  responseToBlob (response: Blob, file: string) {
-    const dataType = response.type
-    const binaryData = []
-    binaryData.push(response)
+  responseToBlob (binaryData: any, file: string, type: string) {
     const downloadLink = document.createElement('a')
-    downloadLink.href = window.URL.createObjectURL(new Blob(binaryData, { type: dataType }))
+    const blob = new Blob([binaryData], { type })
+    downloadLink.href = window.URL.createObjectURL(blob)
     if (file) { downloadLink.setAttribute('download', file) }
     document.body.appendChild(downloadLink)
     downloadLink.click()
   }
 
   download (file?: string, pubId?: string) {
+    let fileName = ''
+    let type = ''
+    console.log(pubId)
+    console.log(file)
+
     if (pubId && file) {
+      console.log(1)
       this.http.get(
         `${environment.api}files/download/${pubId}`,
         {
@@ -242,8 +246,10 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
         (response) => {
           const data = response.body
           if (!data) return
-          const fileName = response.headers.get('x-filename') ?? 'default'
-          this.responseToBlob(data, fileName)
+          fileName = response.headers.get('x-filename') ?? 'default'
+          type = response.headers.get('content-type') ?? 'application/octet-stream'
+          console.log(data)
+          this.responseToBlob(data, fileName, type)
         },
         (error: HttpErrorResponse) => {
           console.log(error)
@@ -256,8 +262,11 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.pickedElements.size === 1) {
       const pubId = this.pickedElements.values().next().value
+      console.log(this.pickedElements.values())
+
       if (!pubId) return
 
+      console.log(2)
       this.http.get(
         `${environment.api}files/download/${pubId}`,
         {
@@ -270,8 +279,10 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
         (response) => {
           const data = response.body
           if (!data) return
-          const fileName = response.headers.get('x-filename') ?? 'default'
-          this.responseToBlob(data, fileName)
+          // buff.push(data)
+          fileName = response.headers.get('x-filename') ?? 'default'
+          type = response.headers.get('content-type') ?? 'application/octet-stream'
+          this.responseToBlob(data, fileName, type)
         },
         (error: HttpErrorResponse) => {
           console.log(error)
@@ -280,18 +291,32 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
       return
     }
 
-    this.cookieService.set('fileselection', JSON.stringify([...this.pickedElements.values()]))
+    this.cookieService.set(
+      'fileselection',
+      JSON.stringify([...this.pickedElements.values()]),
+      new Date(Date.now() + 3600),
+      '/',
+      environment.domain,
+      true
+    )
 
+    console.log(3)
     this.http.get(
       `${environment.api}files/download`,
       {
         responseType: 'blob',
         reportProgress: true,
-        withCredentials: true
+        withCredentials: true,
+        observe: 'response'
       }
     ).subscribe(
       (response) => {
-        this.responseToBlob(response, nanoid() + '.zip')
+        const data = response.body
+        if (!data) return
+        // buff.push(data)
+        fileName = response.headers.get('x-filename') ?? 'default'
+        type = response.headers.get('content-type') ?? 'application/octet-stream'
+        this.responseToBlob(data, nanoid() + '.zip', type)
       },
       (error: HttpErrorResponse) => {
         console.log(error)
