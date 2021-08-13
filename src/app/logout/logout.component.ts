@@ -5,45 +5,45 @@ import { CookieService } from 'ngx-cookie-service'
 import { environment } from '../../environments/environment'
 
 @Component({
-  selector: 'app-logout',
-  templateUrl: './logout.component.html',
-  styleUrls: ['./logout.component.sass']
+    selector: 'app-logout',
+    templateUrl: './logout.component.html',
+    styleUrls: ['./logout.component.sass']
 })
 export class LogoutComponent implements OnInit {
-  // eslint-disable-next-line no-useless-constructor
-  constructor (
+    // eslint-disable-next-line no-useless-constructor
+    constructor (
     private Router: Router,
     private http: HttpClient,
     private cookieService: CookieService
-  ) { }
+    ) { }
 
-  ngOnInit (): void {
-    const exist = localStorage.getItem('user')
-    if (!exist) {
-      this.Router.navigate(['/'])
-      return
-    }
-
-    localStorage.removeItem('user')
-    this.cookieService.delete('connect.sid')
-
-    this.http.get(
-      `${environment.api}users/logout`,
-      {
-        // headers: new HttpHeaders(this.CrudService.getHeaders()),
-        reportProgress: true,
-        withCredentials: true
-      }
-    ).subscribe(
-      (response) => {
-        console.log(response)
-        if (response) {
-          this.Router.navigate(['/'])
+    ngOnInit (): void {
+        const exist = localStorage.getItem('user')
+        if (!exist) {
+            this.Router.navigate(['/'])
+            return
         }
-      },
-      (error) => {
-        console.log(error)
-      }
-    )
-  }
+
+        localStorage.removeItem('user')
+        this.cookieService.delete('connect.sid')
+
+        this.http.get(
+            `${environment.api}users/logout`,
+            {
+                // Headers: new HttpHeaders(this.CrudService.getHeaders()),
+                reportProgress: true,
+                withCredentials: true
+            }
+        ).subscribe(
+            (response) => {
+                console.log(response)
+                if (response) {
+                    this.Router.navigate(['/'])
+                }
+            },
+            (error) => {
+                console.log(error)
+            }
+        )
+    }
 }

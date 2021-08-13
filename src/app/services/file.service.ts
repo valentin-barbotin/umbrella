@@ -18,12 +18,12 @@ interface GET_DATA_QUERY_RESPONSE {
 }
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class FileService {
   @ViewChild(MatSort) sort!: MatSort;
-  sizeLimit: number = 0;
-  sizeTotal: number = 0;
+  sizeLimit = 0
+  sizeTotal = 0
   stateProgress = 'determinate';
 
   files: IData[] = []
@@ -33,20 +33,21 @@ export class FileService {
   queryDataSubscription?: Subscription;
   dataSource = new MatTableDataSource<any>([]);
 
-  currentFolder: string = 'root'
+  currentFolder = 'root'
   currentPath: IFolder[] = [];
 
-  calcUsedStorage () {
-    return (this.sizeTotal / this.sizeLimit) * 100
+  calcUsedStorage (): number {
+      return (this.sizeTotal / this.sizeLimit) * 100
   }
 
-  updateDataSource () {
-    this.dataSource = new MatTableDataSource(
-      [...this.folders, ...this.files]
-    )
-    this.dataSource.sort = this.sort
-    // this.stateProgress = 'determinate'
-    // this.loading = false
+  updateDataSource (): void {
+      this.dataSource = new MatTableDataSource([
+          ...this.folders,
+          ...this.files
+      ])
+      this.dataSource.sort = this.sort
+      // this.stateProgress = 'determinate'
+      // this.loading = false
   }
 
   constructor (
@@ -54,12 +55,12 @@ export class FileService {
     private UserService: UserService,
     private router: Router
   ) {
-    const user = this.UserService.User
-    if (!user) {
-      router.navigate(['/login'])
-      return
-    }
-    const GET_DATA_QUERY = gql`
+      const user = this.UserService.User
+      if (!user) {
+          router.navigate(['/login'])
+          return
+      }
+      const GET_DATA_QUERY = gql`
       query datas($folder: String, $username: String) {
           folders(folder: $folder) {
               name
@@ -84,26 +85,28 @@ export class FileService {
       }
     `
 
-    this.dataQuery = this.apollo.watchQuery({
-      query: GET_DATA_QUERY,
-      variables: {
-        folder: 'root',
-        username: user.username
-      }
-    })
-
-    this.queryDataSubscription = this.dataQuery
-      .valueChanges
-      .subscribe((result: GET_DATA_QUERY_RESPONSE) => {
-        this.sizeTotal = 0
-        this.sizeLimit = 0
-        if (result.data) {
-          this.files = result.data.files
-          this.folders = result.data.folders
-          this.sizeTotal = (result.data.storageUsed > 0) ? result.data.storageUsed : 0
-          this.sizeLimit = result.data.storageMax
-          this.updateDataSource()
-        }
+      this.dataQuery = this.apollo.watchQuery({
+          query: GET_DATA_QUERY,
+          variables: {
+              folder: 'root',
+              username: user.username
+          }
       })
+
+      this.queryDataSubscription = this.dataQuery
+          .valueChanges
+          .subscribe((result: GET_DATA_QUERY_RESPONSE) => {
+              this.sizeTotal = 0
+              this.sizeLimit = 0
+              if (result.data) {
+                  this.files = result.data.files
+                  this.folders = result.data.folders
+                  this.sizeTotal = result.data.storageUsed > 0
+                      ? result.data.storageUsed
+                      : 0
+                  this.sizeLimit = result.data.storageMax
+                  this.updateDataSource()
+              }
+          })
   }
 }

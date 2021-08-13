@@ -15,9 +15,9 @@ import { MatDialog } from '@angular/material/dialog'
 import { createFolderComponent } from './createFolder.component'
 
 @Component({
-  selector: 'app-files',
-  templateUrl: './files.component.html',
-  styleUrls: ['./files.component.sass']
+    selector: 'app-files',
+    templateUrl: './files.component.html',
+    styleUrls: ['./files.component.sass']
 })
 export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
@@ -25,438 +25,417 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
   hoveredElement?: string;
 
   pickedElements: Set<string> = new Set()
-  pickedElementsTotalSize : number = 0
+  pickedElementsTotalSize = 0
 
   stateUploading: ProgressBarMode = 'indeterminate'
   stateFixed: ProgressBarMode = 'determinate'
 
-  displayedColumns = ['name', 'size', 'type', 'createdOn']
+  displayedColumns = ['name',
+      'size',
+      'type',
+      'createdOn']
 
-  getProgressState () {
-    return this.FileService.stateProgress ? this.stateUploading : this.stateFixed
+  getProgressState (): ProgressBarMode {
+      return this.FileService.stateProgress
+          ? this.stateUploading
+          : this.stateFixed
   }
 
-  isFile (id: string) {
-    const element = this.FileService.dataSource.data.find(x => x.pubId === id)
-    if (!element) return false
-    return element.__typename === 'files'
+  isFile (id: string): boolean {
+      const element = this.FileService.dataSource.data.find((x) => x.pubId === id)
+      if (!element) return false
+      return element.__typename === 'files'
   }
 
-  isFolder (id: string) {
-    const element = this.FileService.dataSource.data.find(x => x.pubId === id)
-    if (!element) return false
-    return element.__typename === 'folder'
+  isFolder (id: string): boolean {
+      const element = this.FileService.dataSource.data.find((x) => x.pubId === id)
+      if (!element) return false
+      return element.__typename === 'folder'
   }
 
   isItPicked (id: string) {
-    return this.pickedElements?.has(id)
+      return this.pickedElements?.has(id)
   }
 
-  clickOnElem (elem: IData, event: MouseEvent) {
-    this.pickFile(event, elem)
+  clickOnElem (elem: IData, event: MouseEvent): void {
+      this.pickFile(event, elem)
   }
 
-  doubleClickOnElem (elem: IFolder) {
-    if (elem.type) return this.download(elem.name, elem.pubId)
+  doubleClickOnElem (elem: IFolder): void {
+      if (elem.type) return this.download(elem.name, elem.pubId)
 
-    this.clickOnFolder(elem)
-    this.getData()
+      this.clickOnFolder(elem)
+      this.getData()
   }
 
   clickOnFolder (folder: IFolder) {
-    if (folder.pubId === this.FileService.currentFolder) return
-    this.FileService.currentFolder = folder.pubId
+      if (folder.pubId === this.FileService.currentFolder) return
+      this.FileService.currentFolder = folder.pubId
 
-    const checkIfInCurrentPath = this.FileService.currentPath.findIndex(x => x.pubId === folder.pubId)
-    if (checkIfInCurrentPath > -1) {
-      this.FileService.currentPath = this.FileService.currentPath.slice(0, checkIfInCurrentPath + 1)
-    } else {
-      this.FileService.currentPath.push(folder)
-    }
+      const checkIfInCurrentPath = this.FileService.currentPath.findIndex((x) => x.pubId === folder.pubId)
+      if (checkIfInCurrentPath > -1) {
+          this.FileService.currentPath = this.FileService.currentPath.slice(0, checkIfInCurrentPath + 1)
+      } else {
+          this.FileService.currentPath.push(folder)
+      }
 
-    this.getData()
+      this.getData()
   }
 
-  clearFolderPath () {
-    this.FileService.currentFolder = 'root'
-    this.FileService.currentPath = []
-    this.getData()
+  clearFolderPath (): void {
+      this.FileService.currentFolder = 'root'
+      this.FileService.currentPath = []
+      this.getData()
   }
 
-  returnToParentFolder () {
-    this.FileService.currentFolder = this.FileService.currentPath.pop()?.parent ?? 'root'
-    this.getData()
+  returnToParentFolder (): void {
+      this.FileService.currentFolder = this.FileService.currentPath.pop()?.parent ?? 'root'
+      this.getData()
   }
 
   /**
    * Return all pubId of the files
    */
-  getIDs (set: Set<string>) {
-    const items = []
-    for (const element of [...set]) {
-      items.push(
-        this.FileService.files.find(x => x.name === element)?.pubId
-      )
-    }
-    return items
+  getIDs (set: Set<string>): (string | undefined)[] {
+      const items = []
+      for (const element of [...set]) {
+          items.push(this.FileService.files.find((x) => x.name === element)?.pubId)
+      }
+      return items
   }
 
   /**
    * Return the pubId of the file
    */
-  getID (set: Set<string>) {
-    const selection = set.values().next().value
-    return this.FileService.files.find(x => x.name === selection)?.pubId
+  getID (set: Set<string>): string | undefined {
+      const selection = set.values().next().value
+      return this.FileService.files.find((x) => x.name === selection)?.pubId
   }
 
-  shareFile () {
-    const selectionSize = this.pickedElements.size
-    switch (true) {
-      case (selectionSize === 0):
-        this.snackBar.open('No selection', 'OK')
-        return
-      case (selectionSize > 1):
-        this.snackBar.open('Only one file at time can be shared', 'OK')
-        return
-    }
+  shareFile (): void {
+      const selectionSize = this.pickedElements.size
+      const sharingMsg = `You are about to share ${selectionSize} files. Are you sure?`
+      //   const dialogRef = this.dialog.open(ShareDialogComponent, {
+      //       data: {
+      //           sharingMsg,
+      //           pickedElements: this.pickedElements,
+      //           pickedElementsTotalSize: this.pickedElementsTotalSize
+      //       }
+      //   })
 
-    const pubId = this.pickedElements.values().next().value
-    if (!this.isFile(pubId)) return
-
-    this.apollo.watchQuery({
-      query: gql`
-      query filesharing($file: String!) {
-        filesharing(file: $file)
+      if (selectionSize === 0) {
+          this.snackBar.open('No selection', 'OK')
+          return
       }
-      `,
-
-      variables: {
-        file: pubId
+      if (selectionSize > 1) {
+          this.snackBar.open('Only one file at time can be shared', 'OK')
+          return
       }
-    })
-      .valueChanges
-      .subscribe(
-        (result: any) => {
-          const key = result.data.filesharing
-          const fullLink = `${environment.api}files/download/${pubId}?key=${key}`
-          navigator.clipboard.writeText(fullLink)
-          this.snackBar.open(fullLink, 'OK')
-        }
-      )
+
+      const pubId = this.pickedElements.values().next().value
+      if (!this.isFile(pubId)) return
+
+      this.apollo.watchQuery({
+          query: gql`
+            query filesharing($file: String!) {
+                filesharing(file: $file)
+            }
+            `,
+
+          variables: {
+              file: pubId
+          }
+      }).
+          valueChanges.
+          subscribe((result: any) => {
+              const key = result.data.filesharing
+              const fullLink = `${environment.api}files/download/${pubId}?key=${key}`
+              navigator.clipboard.writeText(fullLink)
+              this.snackBar.open(fullLink, 'OK')
+          })
   }
 
-  createFolder () {
-    const dialogRef = this.dialog.open(createFolderComponent, {
-      data: {
-        folder: this.FileService.currentFolder
-      }
-    })
+  createFolder (): void {
+      const dialogRef = this.dialog.open(createFolderComponent, {
+          data: {
+              folder: this.FileService.currentFolder
+          }
+      })
 
-    dialogRef.afterClosed().subscribe(result => {
-      this.getData()
-      console.log('The dialog was closed')
-    })
+      dialogRef.afterClosed().subscribe((result) => {
+          this.getData()
+          console.log('The dialog was closed')
+      })
   }
 
-  applyFilter (event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value
-    this.FileService.dataSource.filter = filterValue.trim().toLowerCase()
+  applyFilter (event: Event): void {
+      const filterValue = (event.target as HTMLInputElement).value
+      this.FileService.dataSource.filter = filterValue.trim().toLowerCase()
   }
 
-  deleteFiles () {
-    if (!this.pickedElements) return
-    const amount = this.pickedElements.size
-    if (amount === 0) return
+  deleteFiles (): void {
+      if (!this.pickedElements) return
+      const amount = this.pickedElements.size
+      if (amount === 0) return
 
-    const elements = [...this.pickedElements.values()]
-    const tmpData = this.FileService.dataSource.data.filter(x => elements.includes(x.pubId))
-    const folders = tmpData.filter(x => this.isFolder(x.pubId)).map(x => x.pubId)
-    const files = tmpData.filter(x => this.isFile(x.pubId)).map(x => x.pubId)
+      const elements = [...this.pickedElements.values()]
+      const tmpData = this.FileService.dataSource.data.filter((x) => elements.includes(x.pubId))
+      const folders = tmpData.filter((x) => this.isFolder(x.pubId)).map((x) => x.pubId)
+      const files = tmpData.filter((x) => this.isFile(x.pubId)).map((x) => x.pubId)
 
-    const res = confirm(`Do you really want to delete ${amount} element(s). This action is irreversible`)
-    if (!res) return
+      const res = confirm(`Do you really want to delete ${amount} element(s). This action is irreversible`)
+      if (!res) return
 
-    this.apollo.mutate({
-      mutation: gql`
+      this.apollo.mutate({
+          mutation: gql`
         mutation deleteElements($folders: [String]!, $files: [String]!) {
           deleteFolders(folders: $folders)
           deleteFiles(files: $files)
         }
       `,
-      variables: {
-        folders,
-        files
-      }
-    })
-      .subscribe(
-        (result: any) => {
-          this.snackBar.open('Elements deleted', 'OK')
-          this.getData()
-        }
-      )
-
-    // this.cookieService.set('fileselection', JSON.stringify(elements))
-
-    // this.http.delete(
-    //   `${environment.api}files/delete`,
-    //   {
-    //     reportProgress: true,
-    //     withCredentials: true
-    //   }
-    // ).subscribe(
-    //   (response) => {
-    //     this.snackBar.open(`${amount} files have been deleted`, 'Ok', {
-    //       duration: 10000
-    //     })
-
-    //     this.getData()
-    //   },
-    //   (error: HttpErrorResponse) => {
-    //     console.log(error)
-    //   }
-    // )
-  }
-
-  responseToBlob (binaryData: any, file: string, type: string) {
-    const downloadLink = document.createElement('a')
-    const blob = new Blob([binaryData], { type })
-    downloadLink.href = window.URL.createObjectURL(blob)
-    if (file) { downloadLink.setAttribute('download', file) }
-    document.body.appendChild(downloadLink)
-    downloadLink.click()
-  }
-
-  download (file?: string, pubId?: string) {
-    let fileName = ''
-    let type = ''
-    console.log(pubId)
-    console.log(file)
-
-    if (pubId && file) {
-      console.log(1)
-      this.http.get(
-        `${environment.api}files/download/${pubId}`,
-        {
-          responseType: 'blob',
-          reportProgress: true,
-          withCredentials: true,
-          observe: 'response'
-        }
-      ).subscribe(
-        (response) => {
-          const data = response.body
-          if (!data) return
-          fileName = response.headers.get('x-filename') ?? 'default'
-          type = response.headers.get('content-type') ?? 'application/octet-stream'
-          console.log(data)
-          this.responseToBlob(data, fileName, type)
-        },
-        (error: HttpErrorResponse) => {
-          console.log(error)
-        }
-      )
-      return
-    }
-
-    if (!this.pickedElements) return
-
-    if (this.pickedElements.size === 1) {
-      const pubId = this.pickedElements.values().next().value
-      console.log(this.pickedElements.values())
-
-      if (!pubId) return
-
-      console.log(2)
-      this.http.get(
-        `${environment.api}files/download/${pubId}`,
-        {
-          responseType: 'blob',
-          reportProgress: true,
-          withCredentials: true,
-          observe: 'response'
-        }
-      ).subscribe(
-        (response) => {
-          const data = response.body
-          if (!data) return
-          // buff.push(data)
-          fileName = response.headers.get('x-filename') ?? 'default'
-          type = response.headers.get('content-type') ?? 'application/octet-stream'
-          this.responseToBlob(data, fileName, type)
-        },
-        (error: HttpErrorResponse) => {
-          console.log(error)
-        }
-      )
-      return
-    }
-
-    this.cookieService.set(
-      'fileselection',
-      JSON.stringify([...this.pickedElements.values()]),
-      new Date(Date.now() + 3600),
-      '/',
-      environment.domain,
-      true
-    )
-
-    console.log(3)
-    this.http.get(
-      `${environment.api}files/download`,
-      {
-        responseType: 'blob',
-        reportProgress: true,
-        withCredentials: true,
-        observe: 'response'
-      }
-    ).subscribe(
-      (response) => {
-        const data = response.body
-        if (!data) return
-        // buff.push(data)
-        fileName = response.headers.get('x-filename') ?? 'default'
-        type = response.headers.get('content-type') ?? 'application/octet-stream'
-        this.responseToBlob(data, nanoid() + '.zip', type)
-      },
-      (error: HttpErrorResponse) => {
-        console.log(error)
-      }
-    )
-  }
-
-  async downloadSelection () {
-    if (!this.pickedElements) return
-    this.download()
-  }
-
-  pickFile (event: MouseEvent, file: IData) {
-    const id = file.pubId
-    const size = file.size
-    const ctrlKey = event.ctrlKey
-    const metaKey = event.metaKey
-
-    if (!ctrlKey && !metaKey) {
-      this.pickedElementsTotalSize = 0
-      this.pickedElements.clear()
-    }
-
-    if (this.pickedElements.has(id)) {
-      if (file.type) this.pickedElementsTotalSize -= size
-      this.pickedElements.delete(id)
-      return
-    }
-
-    if (file.type) this.pickedElementsTotalSize += size
-    this.pickedElements.add(id)
-  }
-
-  getData () {
-    if (!this.FileService.dataQuery) return
-    const user = this.UserService.User
-    if (!user) return
-    this.pickedElements?.clear()
-    this.pickedElementsTotalSize = 0
-    this.FileService.stateProgress = 'query'
-    this.FileService.dataQuery.refetch({
-      folder: this.FileService.currentFolder,
-      username: user.username
-    }).then(
-      () => {
-        // this.FileService.updateDataSource()
-        this.FileService.stateProgress = 'determinate'
-      }
-    )
-  }
-
-  uploadFile (elem: HTMLInputElement) {
-    const files = elem.files
-
-    if (!files) return
-
-    let totalSize = 0
-    const form = new FormData()
-
-    let amount = 0
-    for (let i = 0; i < files.length; i++) {
-      const file = files.item(i)
-      if (!file) return
-      if (this.checkFile(file)) {
-        const fileExists = this.FileService.files.filter(x =>
-          x.name === file.name
-        )
-
-        let replace = true
-        if (fileExists.length > 0) {
-          if (!confirm(`${file.name} is already in this folder, do you want to replace it ?`)) {
-            replace = false
+          variables: {
+              folders,
+              files
           }
-        }
-
-        if (replace) {
-          totalSize += file.size
-          form.append('file' + i, file)
-          ++amount
-        }
-      } else {
-        this.snackBar.open('Invalid file', 'OK')
-        return
-      }
-    }
-
-    elem.value = ''
-    if (amount === 0) return
-
-    this.FileService.stateProgress = 'indeterminate'
-
-    if (this.FileService.sizeTotal + totalSize > this.FileService.sizeLimit) {
-      this.snackBar.open('No enough space available', 'OK', {
-        duration: 10000
-      })
-      return
-    }
-
-    form.append('folder', this.FileService.currentFolder ?? 'root')
-
-    this.http.post(
-      `${environment.api}files/upload`,
-      form,
-      {
-        reportProgress: true,
-        withCredentials: true
-      }
-    ).subscribe(
-      (response) => {
-      },
-      (error) => {
-        console.log(error)
-      },
-      () => {
-        this.snackBar.open(`${amount} files have been uploaded`, 'Ok', {
-          duration: 10000
-        })
-        this.getData()
-      }
-    )
+      }).
+          subscribe((result: any) => {
+              this.snackBar.open('Elements deleted', 'OK')
+              this.getData()
+          })
   }
 
-  checkFile (file: globalThis.File) {
-    if (!environment.checkUploadedFiles) return true
+  responseToBlob (binaryData: Blob, file: string, type: string): void {
+      const downloadLink = document.createElement('a')
+      const blob = new Blob([binaryData], { type })
+      downloadLink.href = window.URL.createObjectURL(blob)
+      if (file) {
+          downloadLink.setAttribute('download', file)
+      }
+      document.body.appendChild(downloadLink)
+      downloadLink.click()
+  }
 
-    const allowed = [
-      'image/png'
-    ]
+  download (file?: string, pubId?: string): void {
+      let fileName = ''
+      let type = ''
+      console.log(pubId)
+      console.log(file)
 
-    if (!allowed.includes(file.type)) {
-      this.snackBar.open('This type of file is not allowed', 'OK')
-      return false
-    }
+      if (pubId && file) {
+          this.http.get(
+              `${environment.api}files/download/${pubId}`,
+              {
+                  responseType: 'blob',
+                  reportProgress: true,
+                  withCredentials: true,
+                  observe: 'response'
+              }
+          ).subscribe(
+              (response) => {
+                  const data = response.body
+                  if (!data) return
+                  fileName = response.headers.get('x-filename') ?? 'default'
+                  type = response.headers.get('content-type') ?? 'application/octet-stream'
+                  console.log(data)
+                  this.responseToBlob(data, fileName, type)
+              },
+              (error: HttpErrorResponse) => {
+                  console.log(error)
+              }
+          )
+          return
+      }
 
-    if (file.size > 5000000) {
-      this.snackBar.open('The file is too large to be stored', 'OK')
-      return false
-    }
+      if (!this.pickedElements) return
 
-    return true
+      if (this.pickedElements.size === 1) {
+          const id = this.pickedElements.values().next().value
+          console.log(this.pickedElements.values())
+
+          if (!id) return
+
+          this.http.get(
+              `${environment.api}files/download/${id}`,
+              {
+                  responseType: 'blob',
+                  reportProgress: true,
+                  withCredentials: true,
+                  observe: 'response'
+              }
+          ).subscribe(
+              (response) => {
+                  const data = response.body
+                  if (!data) return
+                  fileName = response.headers.get('x-filename') ?? 'default'
+                  type = response.headers.get('content-type') ?? 'application/octet-stream'
+                  this.responseToBlob(data, fileName, type)
+              },
+              (error: HttpErrorResponse) => {
+                  console.log(error)
+              }
+          )
+          return
+      }
+
+      this.cookieService.set(
+          'fileselection',
+          JSON.stringify([...this.pickedElements.values()]),
+          new Date(Date.now() + 3600),
+          '/',
+          environment.domain,
+          true
+      )
+
+      this.http.get(
+          `${environment.api}files/download`,
+          {
+              responseType: 'blob',
+              reportProgress: true,
+              withCredentials: true,
+              observe: 'response'
+          }
+      ).subscribe(
+          (response) => {
+              const data = response.body
+              if (!data) return
+              fileName = response.headers.get('x-filename') ?? 'default'
+              type = response.headers.get('content-type') ?? 'application/octet-stream'
+              this.responseToBlob(data, `${nanoid()}.zip`, type)
+          },
+          (error: HttpErrorResponse) => {
+              console.log(error)
+          }
+      )
+  }
+
+  downloadSelection (): void {
+      if (!this.pickedElements) return
+      this.download()
+  }
+
+  pickFile (event: MouseEvent, file: IData): void {
+      const id = file.pubId
+      const {size} = file
+      const {ctrlKey} = event
+      const {metaKey} = event
+
+      if (!ctrlKey && !metaKey) {
+          this.pickedElementsTotalSize = 0
+          this.pickedElements.clear()
+      }
+
+      if (this.pickedElements.has(id)) {
+          if (file.type) this.pickedElementsTotalSize -= size
+          this.pickedElements.delete(id)
+          return
+      }
+
+      if (file.type) this.pickedElementsTotalSize += size
+      this.pickedElements.add(id)
+  }
+
+  getData (): void {
+      if (!this.FileService.dataQuery) return
+      const user = this.UserService.User
+      if (!user) return
+      this.pickedElements?.clear()
+      this.pickedElementsTotalSize = 0
+      this.FileService.stateProgress = 'query'
+      this.FileService.dataQuery.refetch({
+          folder: this.FileService.currentFolder,
+          username: user.username
+      }).then(() => {
+          // This.FileService.updateDataSource()
+          this.FileService.stateProgress = 'determinate'
+      })
+  }
+
+  uploadFile (elem: HTMLInputElement): void {
+      const {files} = elem
+
+      if (!files) return
+
+      let totalSize = 0
+      const form = new FormData()
+
+      let amount = 0
+      for (let i = 0; i < files.length; i++) {
+          const file = files.item(i)
+          if (!file) return
+          if (!this.checkFile(file)) {
+              this.snackBar.open('Invalid file', 'OK')
+              return
+          }
+          const fileExists = this.FileService.files.filter((x) => x.name === file.name)
+
+          let replace = true
+          if (fileExists.length > 0) {
+              if (!confirm(`${file.name} is already in this folder, do you want to replace it ?`)) {
+                  replace = false
+              }
+          }
+
+          if (replace) {
+              totalSize += file.size
+              form.append(`file${i}`, file)
+              ++amount
+          }
+      }
+
+      elem.value = ''
+      if (amount === 0) return
+
+      this.FileService.stateProgress = 'indeterminate'
+
+      if (this.FileService.sizeTotal + totalSize > this.FileService.sizeLimit) {
+          this.snackBar.open('No enough space available', 'OK', {
+              duration: 10000
+          })
+          return
+      }
+
+      form.append('folder', this.FileService.currentFolder ?? 'root')
+
+      this.http.post(
+          `${environment.api}files/upload`,
+          form,
+          {
+              reportProgress: true,
+              withCredentials: true
+          }
+      ).subscribe(
+          (response) => {
+          },
+          (error) => {
+              console.log(error)
+          },
+          () => {
+              this.snackBar.open(`${amount} files have been uploaded`, 'Ok', {
+                  duration: 10000
+              })
+              this.getData()
+          }
+      )
+  }
+
+  checkFile (file: globalThis.File): boolean {
+      if (!environment.checkUploadedFiles) return true
+
+      const allowed = [
+          'image/png'
+      ]
+
+      if (!allowed.includes(file.type)) {
+          this.snackBar.open('This type of file is not allowed', 'OK')
+          return false
+      }
+
+      if (file.size > 5000000) {
+          this.snackBar.open('The file is too large to be stored', 'OK')
+          return false
+      }
+
+      return true
   }
 
   // eslint-disable-next-line no-useless-constructor
@@ -468,12 +447,14 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
     private dialog: MatDialog,
     public FileService: FileService,
     private UserService: UserService
-  ) {
-  }
+  ) {}
 
   ngOnDestroy () {
-    // if (!this.queryFilesSubscription) return
-    // this.queryFilesSubscription.unsubscribe()
+
+      /*
+       * If (!this.queryFilesSubscription) return
+       * this.queryFilesSubscription.unsubscribe()
+       */
   }
 
   ngOnInit (): void {
