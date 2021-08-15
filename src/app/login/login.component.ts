@@ -99,7 +99,7 @@ export class LoginComponent implements OnInit {
         const login = this.login?.value as string
         const password = this.password?.value as string
         const otp = this.otp?.value as string
-        if (!login || !password || !otp) {
+        if (!login || !password) {
             this.failed(this)
             return
         }
@@ -123,7 +123,7 @@ export class LoginComponent implements OnInit {
             }
         }).subscribe(
             (response: any) => {
-                if (response?.data.user) return this.failed(this)
+                if (!response?.data.user) return this.failed(this)
                 localStorage.setItem('user', JSON.stringify(response.data.user))
                 this.state = 'connected'
                 this.authButton = 'Connected !'
