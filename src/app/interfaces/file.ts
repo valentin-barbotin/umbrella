@@ -6,11 +6,6 @@ export interface File {
     lastModifiedDate: Date | null;
     hash: string | 'sha1' | 'md5' | 'sha256' | null;
 }
-export interface IKey {
-    algo: string;
-    key: Buffer;
-    iv: Buffer;
-}
 
 export interface IData {
     name: string;
@@ -25,6 +20,5 @@ export interface IData {
     size: number;
     crypted: boolean;
     compressed: boolean;
-    key?: IKey;
     pubId: string;
 }

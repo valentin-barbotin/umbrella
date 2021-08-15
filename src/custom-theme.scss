@@ -9,6 +9,11 @@
 // Be sure that you only ever include this mixin once!
 @include mat.core();
 
+$umbrella-typography: mat.define-typography-config(
+  $font-family: 'Roboto',
+);
+@include mat.core($umbrella-typography);
+
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
@@ -25,14 +30,32 @@ $umbrella-theme: mat.define-light-theme((
     primary: $umbrella-primary,
     accent: $umbrella-accent,
     warn: $umbrella-warn,
-  )
+  ),
+  typography: $umbrella-typography
 ));
+
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include mat.all-component-themes($umbrella-theme);
 
+.darkMode {
+  $angular-dark-theme: mat.define-dark-theme(
+    (
+      color: (
+        primary: $umbrella-primary,
+        accent: $umbrella-accent,
+        warn: $umbrella-warn,
+      ),
+    )
+  );
+  @include mat.all-component-colors($angular-dark-theme);
+}
+
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+  margin: 0;
+  // font-family: Roboto, "Helvetica Neue", sans-serif;
+}

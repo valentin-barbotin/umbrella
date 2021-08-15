@@ -36,7 +36,7 @@
   <input multiple (change)="uploadFile(upload)" hidden #upload type="file" />
   <p class="hidden sm:block">
     <mat-toolbar class="bg-transparent text-gray-100 flex">
-      <span class="cursor-pointer" (click)="clearFolderPath()">Cloud drive</span>
+      <span class="cursor-pointer" color="warn" (click)="clearFolderPath()">Cloud drive</span>
       <span class="cursor-pointer" (click)="clickOnFolder(folder)" *ngFor="let folder of FileService.currentPath">&nbsp;/ {{ folder.name }} </span>
       <span class="flex-auto"></span>
       <button (click)="createFolder()" mat-button>
@@ -64,11 +64,10 @@
     </button>
   </div>
 
-  <div class="text-gray-100 px-4">
-    <mat-form-field appearance="standard">
-      <mat-label class="text-gray-100">Search</mat-label>
+  <div class="px-4">
+    <mat-form-field class="darkMode" appearance="standard">
+      <mat-label>Search</mat-label>
       <input
-        class="text-gray-100"
         matInput
         (keyup)="applyFilter($event)"
         placeholder="Search for a file name"
