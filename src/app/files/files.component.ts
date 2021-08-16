@@ -322,24 +322,31 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   pickFile (event: MouseEvent, file: IData): void {
-      const id = file.pubId
-      const {size} = file
-      const {ctrlKey} = event
-      const {metaKey} = event
+      const {pubId, size} = file
+      const {ctrlKey, metaKey} = event
+
+      if (this.pickedElements.has(pubId)) {
+          if (file.type) this.pickedElementsTotalSize -= size
+
+          if (this.pickedElements.size > 1) {
+              this.pickedElementsTotalSize = 0
+              this.pickedElements.clear()
+
+              if (file.type) this.pickedElementsTotalSize += size
+              this.pickedElements.add(pubId)
+          } else {
+              this.pickedElements.delete(pubId)
+          }
+          return
+      }
 
       if (!ctrlKey && !metaKey) {
           this.pickedElementsTotalSize = 0
           this.pickedElements.clear()
       }
 
-      if (this.pickedElements.has(id)) {
-          if (file.type) this.pickedElementsTotalSize -= size
-          this.pickedElements.delete(id)
-          return
-      }
-
       if (file.type) this.pickedElementsTotalSize += size
-      this.pickedElements.add(id)
+      this.pickedElements.add(pubId)
   }
 
   getData (): void {
