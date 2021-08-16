@@ -277,9 +277,17 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
           return
       }
 
+      const elements = [...this.pickedElements.values()]
+      for (const elem of elements) {
+          if (this.isFolder(elem)) {
+              this.snackBar.open('Cannot download folders', 'OK', { duration: 3000 })
+              return
+          }
+      }
+
       this.cookieService.set(
           'fileselection',
-          JSON.stringify([...this.pickedElements.values()]),
+          JSON.stringify(elements),
           new Date(Date.now() + 3600),
           '/',
           environment.domain,
