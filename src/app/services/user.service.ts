@@ -23,8 +23,8 @@ export class UserService {
 
     async createUser (variables: Object): Promise<number> {
         const query = gql`
-    mutation createUser($username: String!, $email: String!, $password1: String!!) {
-      createUser(username: $username, email: $email, password1: $password1)
+    mutation createUser($username: String!, $email: String!, $password: String!) {
+      createUser(username: $username, email: $email, password: $password)
     }`
 
         return new Promise<number>((resolve, reject) => {
