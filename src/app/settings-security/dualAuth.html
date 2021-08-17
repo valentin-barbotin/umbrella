@@ -1,10 +1,12 @@
 <div>
   <h3>Activer l'authentification à deux facteurs</h3>
-  <div class="border rounded">
-    <qrcode [qrdata]="data.token" [errorCorrectionLevel]="'M'"></qrcode>
+  <div class="grid justify-items-center ">
+    <div class="border rounded">
+      <qrcode class="justify-items-center" [qrdata]="data.token" [errorCorrectionLevel]="'M'"></qrcode>
+    </div>
   </div>
 
-  <form (ngSubmit)="onSubmit()" #form="ngForm" [formGroup]="otp">
+  <form (ngSubmit)="onSubmit()" #form="ngForm" [formGroup]="otp" class="mt-4">
     <mat-label>Code</mat-label>
     <input formControlName="code" matInput type="text" />
 
