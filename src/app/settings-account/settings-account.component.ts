@@ -79,7 +79,7 @@ export class SettingsAccountComponent implements OnInit {
   constructor (
     private apollo: Apollo,
     private snackBar: MatSnackBar,
-    private FileService: FileService,
+    public FileService: FileService,
     private dialog: MatDialog
   ) {
   }
