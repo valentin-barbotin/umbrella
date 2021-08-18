@@ -59,7 +59,7 @@
   </div>
 
   <div class="px-4">
-    <button mat-button *ngIf="this.FileService.currentFolder !== 'root'" (click)="returnToParentFolder()">
+    <button mat-raised-button *ngIf="this.FileService.currentFolder !== 'root'" (click)="returnToParentFolder()">
       Retour
     </button>
   </div>
