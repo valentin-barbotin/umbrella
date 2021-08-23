@@ -6,7 +6,7 @@
         </div>
     </div>
     <div class="flex justify-around border mt-12 mx-52 bg-dark2">
-        <div class="w-auto border-r flex justify-center">
+        <div id="classique" class="w-auto border-r flex justify-center">
             <div class="flex-col text-center my-4">
                 <h2>Classique</h2>
                 <div class="my-4">4,99 / Mois</div>
@@ -16,12 +16,12 @@
                     <li>Créez des dossiers afin d'organiser vos fichiers</li>
                 </ul>
                 
-                <button mat-raised-button type="submit" class="border">
+                <button mat-raised-button type="submit" (click)="openDialog()" class="border">
                     Classique
                   </button>
             </div>
         </div>
-        <div class="w-auto border-r flex justify-center">
+        <div id="prime" class="w-auto border-r flex justify-center">
             <div class="flex-col text-center my-4">
                 <h2>Prime</h2>
                 <div class="my-4">9,99 / Mois</div>
@@ -30,12 +30,12 @@
                     <li>Stocker vos fichiers en toute sécurité</li>
                     <li>Créez des dossiers afin d'organiser vos fichiers</li>
                 </ul>
-                <button mat-raised-button type="submit" class="border">
+                <button mat-raised-button type="submit" (click)="openDialog()" class="border">
                     Prime
                 </button>
             </div>
         </div>
-        <div class="w-auto border-r flex justify-center">
+        <div id="premium" class="w-auto border-r flex justify-center">
             <div class="flex-col text-center my-4">
                 <h2>Premium</h2>
                 <div class="my-4">19,99 / Mois</div>
@@ -44,12 +44,12 @@
                     <li>Stocker vos fichiers en toute sécurité</li>
                     <li>Créez des dossiers afin d'organiser vos fichiers</li>
                 </ul>
-                <button mat-raised-button type="submit" class="border">
+                <button mat-raised-button type="submit" (click)="openDialog()" class="border">
                     Premium
                 </button>
             </div>
         </div>
-        <div class="w-auto flex justify-center">
+        <div id="premium+" class="w-auto flex justify-center">
             <div class="flex-col text-center my-4">
                 <h2>Premium +</h2>
                 <div class="my-4">29,99 / Mois</div>
@@ -58,7 +58,7 @@
                     <li>Stocker vos fichiers en toute sécurité</li>
                     <li>Créez des dossiers afin d'organiser vos fichiers</li>
                 </ul>
-                <button mat-raised-button type="submit" class="border">
+                <button mat-raised-button type="submit" (click)="openDialog()" class="border">
                     Premium +
                 </button>
             </div>

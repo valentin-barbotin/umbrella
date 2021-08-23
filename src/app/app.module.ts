@@ -73,7 +73,7 @@ import { SettingsAccountComponent, delAccount } from './settings-account/setting
 import { dualAuth, SettingsSecurityComponent } from './settings-security/settings-security.component';
 import { SettingsSubscriptionComponent } from './settings-subscription/settings-subscription.component';
 import { QRCodeModule } from 'angularx-qrcode';
-import { SubscriptionComponent } from './subscription/subscription.component';
+import { payment, SubscriptionComponent } from './subscription/subscription.component';
 
 /*
  * Export function HttpLoaderFactory(http: HttpClient) {
