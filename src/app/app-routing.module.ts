@@ -8,6 +8,7 @@ import { LoginComponent } from './login/login.component'
 import { LogoutComponent } from './logout/logout.component'
 import { RegisterComponent } from './register/register.component'
 import { SettingsComponent } from './settings/settings.component'
+import { SubscriptionComponent } from './subscription/subscription.component'
 
 const routes: Routes = [
   {
@@ -15,7 +16,9 @@ const routes: Routes = [
     component: DashboardComponent,
     children: [
       { path: 'files', component: FilesComponent },
-      { path: 'settings', component: SettingsComponent }
+      { path: 'settings', component: SettingsComponent },
+      { path: 'subscription', component: SubscriptionComponent }
+      
     ],
     canActivate: [AuthGuard]
   },

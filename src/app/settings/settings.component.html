@@ -30,9 +30,7 @@
   <div class="flex flex-grow flex-col h-full bg-dark2">
     <div [ngSwitch]="mode">
       <app-settings-account *ngSwitchCase="'account'"></app-settings-account>
-      <app-settings-subscription
-        *ngSwitchCase="'abonnement'"
-      ></app-settings-subscription>
+      <app-settings-subscription *ngSwitchCase="'abonnement'"></app-settings-subscription>
       <app-settings-security *ngSwitchCase="'security'"></app-settings-security>
       <div *ngSwitchDefault>Aucune selection</div>
     </div>
