@@ -26,51 +26,46 @@ interface Annual {
 })
 export class SubscriptionComponent implements OnInit {
 
-  openDialog (): void {
-    this.dialog.open(payment, {})
-}
-  
- 
+    openDialog (): void {
+        this.dialog.open(payment, {})
+    }
 
-  // TREE_DATA: Monthly[] = [
-  //     {
-  //         name: 'Pro1',
-  //         id: 'Pro1'
-  //     },
-  //     {
-  //         name: 'Pro2',
-  //         id: 'Pro2'
-  //     },
-  //     {
-  //         name: 'Pro3',
-  //         id: 'Pro3'
-  //     },
-  //     {
-  //         name: 'Pro4',
-  //         id: 'Pro4'
-  //     },
+    test() {
+        const classique = document.getElementById('classique')
+        const prime = document.getElementById('prime')
+        const premium = document.getElementById('premium')
+        const mostPremium = document.getElementById('premium+')
 
-  // ]
+        const test = classique?.innerText
 
-  constructor(
+        const test2 = []
+
+        test2.push(test)
+
+        console.log(test2);
+
+
+    }
+
+    constructor(
     public dialog: MatDialog
-  ) {
-    
-   }
+    ) {
 
-  ngOnInit(): void {
-  }
+    }
+
+    ngOnInit(): void {
+    }
 
 }
 
 @Component({
-  selector: 'payment',
-  templateUrl: './payment.html',
-  styleUrls: ['./subscription.component.sass']
+    selector: 'payment',
+    templateUrl: './payment.html',
+    styleUrls: ['./subscription.component.sass']
 })
 
 export class payment {
-  
+
 
   activated: boolean = false
 
@@ -82,15 +77,15 @@ export class payment {
     public dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    this.dialogRef.backdropClick().subscribe(() => {
-      console.log('background')
-      this.dialogRef.close(this.activated)
-    })
+      this.dialogRef.backdropClick().subscribe(() => {
+          console.log('background')
+          this.dialogRef.close(this.activated)
+      })
   }
 
- 
+
 
   onNoClick (): void {
-    console.log('no click')
+      console.log('no click')
   }
 }
