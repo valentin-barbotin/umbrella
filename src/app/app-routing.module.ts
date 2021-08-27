@@ -11,25 +11,32 @@ import { SettingsComponent } from './settings/settings.component'
 import { SubscriptionComponent } from './subscription/subscription.component'
 
 const routes: Routes = [
-  {
-    path: 'dashboard',
-    component: DashboardComponent,
-    children: [
-      { path: 'files', component: FilesComponent },
-      { path: 'settings', component: SettingsComponent },
-      { path: 'subscription', component: SubscriptionComponent }
-      
-    ],
-    canActivate: [AuthGuard]
-  },
-  { path: 'login', component: LoginComponent },
-  { path: 'logout', component: LogoutComponent },
-  { path: 'files', component: FilesComponent },
-  { path: 'register', component: RegisterComponent }
+    {
+        path: 'dashboard',
+        component: DashboardComponent,
+        children: [
+            { path: 'files',
+                component: FilesComponent },
+            { path: 'settings',
+                component: SettingsComponent },
+            { path: 'subscription',
+                component: SubscriptionComponent }
+
+        ],
+        canActivate: [AuthGuard]
+    },
+    { path: 'login',
+        component: LoginComponent },
+    { path: 'logout',
+        component: LogoutComponent },
+    { path: 'files',
+        component: FilesComponent },
+    { path: 'register',
+        component: RegisterComponent }
 ]
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+    imports: [RouterModule.forRoot(routes)],
+    exports: [RouterModule]
 })
 export class AppRoutingModule { }

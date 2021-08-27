@@ -18,10 +18,6 @@ export class resetPassword {
         return this.resetForm.get('login')
     }
 
-    openSnackBar (message: string, action: string): void {
-        this.snackBar.open(message, action)
-    }
-
     onSubmit (form: FormGroupDirective): void {
         if (form.invalid) return
         const { login } = this

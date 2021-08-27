@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { HttpClient, HttpErrorResponse } from '@angular/common/http'
 import { environment } from '../../environments/environment'
@@ -41,34 +42,70 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
           : this.stateFixed
   }
 
+  /**
+   * Check if the element is a file
+   * @param {string} id
+   * @returns {boolean}
+   */
   isFile (id: string): boolean {
       const element = this.FileService.dataSource.data.find((x) => x.pubId === id)
       if (!element) return false
+      // eslint-disable-next-line no-underscore-dangle
       return element.__typename === 'files'
   }
 
+  /**
+   * Check if the element is a folder
+   * @param {string} id
+   * @returns {boolean}
+   */
   isFolder (id: string): boolean {
       const element = this.FileService.dataSource.data.find((x) => x.pubId === id)
       if (!element) return false
+      // eslint-disable-next-line no-underscore-dangle
       return element.__typename === 'folder'
   }
 
-  isItPicked (id: string) {
+  /**
+   * Check if the element is picked by the user
+   * @param {string} id
+   * @returns {boolean}
+   */
+  isItPicked (id: string): boolean {
       return this.pickedElements?.has(id)
   }
 
+  /**
+   * Used to pick an element
+   * @param {IData} elem
+   * @param {MouseEvent} event
+   * @returns {void}
+   */
   clickOnElem (elem: IData, event: MouseEvent): void {
       this.pickFile(event, elem)
   }
 
+  /**
+   * Download the file by his pubId if it's one, or enter in folder if it's a folder
+   * @param {IFolder} elem
+   * @returns {void}
+   */
   doubleClickOnElem (elem: IFolder): void {
-      if (elem.type) return this.download(elem.name, elem.pubId)
+      if (elem.type) {
+          this.download(elem.name, elem.pubId)
+          return
+      }
 
       this.clickOnFolder(elem)
       this.getData()
   }
 
-  clickOnFolder (folder: IFolder) {
+  /**
+   * Enter in folder and retrieve the data from the server
+   * @param {IFolder} folder
+   * @returns {void}
+   */
+  clickOnFolder (folder: IFolder): void {
       if (folder.pubId === this.FileService.currentFolder) return
       this.FileService.currentFolder = folder.pubId
 
@@ -82,12 +119,20 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
       this.getData()
   }
 
+  /**
+   * Set the user path to root
+   * @returns {void}
+   */
   clearFolderPath (): void {
       this.FileService.currentFolder = 'root'
       this.FileService.currentPath = []
       this.getData()
   }
 
+  /**
+   * Set the user path to the parent of the current folder
+   * @returns {void}
+   */
   returnToParentFolder (): void {
       this.FileService.currentFolder = this.FileService.currentPath.pop()?.parent ?? 'root'
       this.getData()
@@ -95,6 +140,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   /**
    * Return all pubId of the files
+   * @returns {(string | undefined)[]}
    */
   getIDs (set: Set<string>): (string | undefined)[] {
       const items = []
@@ -106,6 +152,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   /**
    * Return the pubId of the file
+   * @returns {string | undefined}
    */
   getID (set: Set<string>): string | undefined {
       const selection = set.values().next().value
@@ -155,6 +202,10 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
           })
   }
 
+  /**
+   * Open a dialog to create a new folder inside the current one
+   * @returns {void}
+   */
   createFolder (): void {
       const dialogRef = this.dialog.open(createFolderComponent, {
           data: {
@@ -168,11 +219,20 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
       })
   }
 
+  /**
+   * Apply filters to the datasource for rendering in list
+   * @param {Event} event
+   * @returns {void}
+   */
   applyFilter (event: Event): void {
-      const filterValue = (event.target as HTMLInputElement).value
-      this.FileService.dataSource.filter = filterValue.trim().toLowerCase()
+      const filterValue = event.target as HTMLInputElement
+      this.FileService.dataSource.filter = filterValue.value.trim().toLowerCase()
   }
 
+  /**
+   * Ask confirmation to delete elements, and delete them from server if the user confirms
+   * @returns {void}
+   */
   deleteFiles (): void {
       if (!this.pickedElements) return
       const amount = this.pickedElements.size
@@ -204,6 +264,13 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
           })
   }
 
+  /**
+   * Take the file and download it
+   * @param {Blob} binaryData
+   * @param {string} file
+   * @param {string} type
+   * @returns {void}
+   */
   responseToBlob (binaryData: Blob, file: string, type: string): void {
       const downloadLink = document.createElement('a')
       const blob = new Blob([binaryData], { type })
@@ -215,12 +282,17 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
       downloadLink.click()
   }
 
+  /**
+   * Start the download of file(s)
+   * @param {string} file?
+   * @param {string} pubId?
+   * @returns {any}
+   */
   download (file?: string, pubId?: string): void {
       let fileName = ''
       let type = ''
-      console.log(pubId)
-      console.log(file)
 
+      // Double click on a file
       if (pubId && file) {
           this.http.get(
               `${environment.api}files/download/${pubId}`,
@@ -248,6 +320,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
 
       if (!this.pickedElements) return
 
+      // Download button when there is a single selection of file
       if (this.pickedElements.size === 1) {
           const id = this.pickedElements.values().next().value
           console.log(this.pickedElements.values())
@@ -277,6 +350,8 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
           return
       }
 
+
+      // Download button when there is a multiple selection of file, receive a zip
       const elements = [...this.pickedElements.values()]
       for (const elem of elements) {
           if (this.isFolder(elem)) {
@@ -316,11 +391,21 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
       )
   }
 
+  /**
+   * Start the download of the selection of files
+   * @returns {void}
+   */
   downloadSelection (): void {
       if (!this.pickedElements) return
       this.download()
   }
 
+  /**
+   * Add or remove an element from the selection
+   * @param {MouseEvent} event
+   * @param {IData} file
+   * @returns {void}
+   */
   pickFile (event: MouseEvent, file: IData): void {
       const {pubId, size} = file
       const {ctrlKey, metaKey} = event
@@ -349,6 +434,10 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
       this.pickedElements.add(pubId)
   }
 
+  /**
+   * Fetch the backend to get the data of the current folder, (bypass local graphql cache)
+   * @returns {void}
+   */
   getData (): void {
       if (!this.FileService.dataQuery) return
       const user = this.UserService.User
@@ -365,6 +454,11 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
       })
   }
 
+  /**
+   * Take user selections of files, and send them to the backend
+   * @param {HTMLInputElement} elem
+   * @returns {void}
+   */
   uploadFile (elem: HTMLInputElement): void {
       const {files} = elem
 
@@ -419,8 +513,7 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
               withCredentials: true
           }
       ).subscribe(
-          (response) => {
-          },
+          (response) => {},
           (error) => {
               console.log(error)
           },
@@ -433,6 +526,11 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
       )
   }
 
+  /**
+   * Check a single file for mime type and size
+   * @param {globalThis.File} file
+   * @returns {boolean}
+   */
   checkFile (file: globalThis.File): boolean {
       if (!environment.checkUploadedFiles) return true
 
@@ -460,7 +558,9 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
     private apollo: Apollo,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
+    // eslint-disable-next-line no-shadow
     public FileService: FileService,
+    // eslint-disable-next-line no-shadow
     private UserService: UserService
   ) {}
 

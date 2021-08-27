@@ -36,18 +36,24 @@ export class FileService {
   currentFolder = 'root'
   currentPath: IFolder[] = [];
 
+  /**
+   * Give percentage of used storage
+   * @returns {number}
+   */
   calcUsedStorage (): number {
-      return (this.sizeTotal / this.sizeLimit) * 100
+      return this.sizeTotal / this.sizeLimit * 100
   }
 
+  /**
+   * Merge files and folders in dataSource
+   * @returns {void}
+   */
   updateDataSource (): void {
       this.dataSource = new MatTableDataSource([
           ...this.folders,
           ...this.files
       ])
       this.dataSource.sort = this.sort
-      // this.stateProgress = 'determinate'
-      // this.loading = false
   }
 
   constructor (

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 import { FormGroup, FormControl, Validators, FormGroupDirective, AbstractControl } from '@angular/forms'
 import { Router } from '@angular/router'
-import { MatDialog, } from '@angular/material/dialog'
+import { MatDialog } from '@angular/material/dialog'
 import { Apollo, gql } from 'apollo-angular'
 
 import {
@@ -123,7 +123,10 @@ export class LoginComponent implements OnInit {
             }
         }).subscribe(
             (response: any) => {
-                if (!response?.data.user) return this.failed(this)
+                if (!response?.data.user) {
+                    this.failed(this)
+                    return
+                }
                 localStorage.setItem('user', JSON.stringify(response.data.user))
                 this.state = 'connected'
                 this.authButton = 'Connected !'

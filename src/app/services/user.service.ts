@@ -21,13 +21,18 @@ export class UserService {
         return null
     }
 
-    async createUser (variables: Object): Promise<number> {
-        const query = gql`
-    mutation createUser($username: String!, $email: String!, $password: String!) {
-      createUser(username: $username, email: $email, password: $password)
-    }`
-
+    /**
+     * Try to create a user from server
+     * @param {Record<string} variables
+     * @param {any} unknown>
+     * @returns {Promise<number>}
+     */
+    createUser (variables: Record<string, any>): Promise<number> {
         return new Promise<number>((resolve, reject) => {
+            const query = gql`
+            mutation createUser($username: String!, $email: String!, $password: String!) {
+                createUser(username: $username, email: $email, password: $password)
+            }`
             this.apollo.mutate({
                 mutation: query,
                 variables
@@ -43,16 +48,19 @@ export class UserService {
         })
     }
 
-    checkOTP (code: string) {
-        const user = this.User
-        if (!user) return
-
-        const query = gql`
-    mutation checkOTP($username: String!, $code: String!) {
-      checkOTP(username: $username, code: $code)
-    }`
-
+    checkOTP (code: string): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
+            const user = this.User
+            if (!user) {
+                resolve(false)
+                return
+            }
+
+            const query = gql`
+                mutation checkOTP($username: String!, $code: String!) {
+                checkOTP(username: $username, code: $code)
+                }`
+
             this.apollo.mutate({
                 mutation: query,
                 variables: {
@@ -74,13 +82,18 @@ export class UserService {
         })
     }
 
-    removeOTP () {
+    /**
+     * Remove MFA from an account
+     * @returns {any}
+     */
+    removeOTP (): void {
         const user = this.User
         if (!user) return
         const query = gql`
-    mutation removeOTP($username: String!) {
-      removeOTP(username: $username)
-    }`
+            mutation removeOTP($username: String!) {
+                removeOTP(username: $username)
+            }`
+
         this.apollo.mutate({
             mutation: query,
             variables: {
@@ -98,16 +111,20 @@ export class UserService {
         )
     }
 
-    generateOTP () {
-        const user = this.User
-        if (!user) return
-
-        const query = gql`
-    mutation generateOTP($username: String!) {
-      generateOTP: generateOTP(username: $username)
-    }`
-
+    /**
+     * Generate an OTP for an account without enable MFA
+     * @returns {Promise<string>}
+     */
+    generateOTP (): Promise<string> {
         return new Promise<string>((resolve, reject) => {
+            const user = this.User
+            if (!user) return
+
+            const query = gql`
+                mutation generateOTP($username: String!) {
+                    generateOTP: generateOTP(username: $username)
+                }`
+
             this.apollo.mutate({
                 mutation: query,
                 variables: {
@@ -127,21 +144,25 @@ export class UserService {
         })
     }
 
-    validateOTP () {
+    /**
+     * Activate MFA for an account
+     * @returns {void}
+     */
+    validateOTP (): void {
         const user = this.User
         if (!user) return
         const query = gql`
-    mutation validateOTP($username: String!) {
-      validateOTP(username: $username)
-    }`
+            mutation validateOTP($username: String!) {
+                validateOTP(username: $username)
+            }`
+
         this.apollo.mutate({
             mutation: query,
             variables: {
                 username: user.username
             }
         }).subscribe(
-            (response: any) => {
-            },
+            (response: any) => {},
             (error) => {
                 console.log(error)
             }

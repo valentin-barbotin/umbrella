@@ -4,9 +4,6 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { MatSlideToggleChange } from '@angular/material/slide-toggle'
 
 
-
-
-
 interface Monthly {
   id: string;
   name: string;
@@ -30,7 +27,7 @@ export class SubscriptionComponent implements OnInit {
         this.dialog.open(payment, {})
     }
 
-    test() {
+    test () {
         const classique = document.getElementById('classique')
         const prime = document.getElementById('prime')
         const premium = document.getElementById('premium')
@@ -47,13 +44,11 @@ export class SubscriptionComponent implements OnInit {
 
     }
 
-    constructor(
-    public dialog: MatDialog
-    ) {
+    constructor (public dialog: MatDialog) {
 
     }
 
-    ngOnInit(): void {
+    ngOnInit (): void {
     }
 
 }
@@ -67,7 +62,7 @@ export class SubscriptionComponent implements OnInit {
 export class payment {
 
 
-  activated: boolean = false
+  activated = false
 
 
   // eslint-disable-next-line no-useless-constructor
@@ -82,7 +77,6 @@ export class payment {
           this.dialogRef.close(this.activated)
       })
   }
-
 
 
   onNoClick (): void {
