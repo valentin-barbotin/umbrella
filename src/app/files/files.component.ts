@@ -196,6 +196,10 @@ export class FilesComponent implements OnInit, OnDestroy, AfterViewInit {
           valueChanges.
           subscribe((result: any) => {
               const key = result.data.filesharing
+              if (!key) {
+                  this.snackBar.open('Error sharing file', 'OK')
+                  return
+              }
               const fullLink = `${environment.api}files/download/${pubId}?key=${key}`
               navigator.clipboard.writeText(fullLink)
               this.snackBar.open(fullLink, 'OK')
