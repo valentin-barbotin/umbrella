@@ -1,5 +1,13 @@
-<div class="text-white mt-6">
+<div class="text-white border-b text-center mt-6">
     <h2>Vous avez choisi l'abonnement :</h2>
-    <p></p>
-
+    <h1>{{ subscription.name }}</h1>
+    <div class="mt-9 mb-6">
+        <p class="price">{{ subscription.price }} € </p>
+        <p>/ Mois </p>
+    </div>
+</div>
+<div class="flex justify-center mt-6">
+    <button id="{{ subscription.id }}" mat-raised-button type="submit" class="border">
+        Payer
+    </button>
 </div>

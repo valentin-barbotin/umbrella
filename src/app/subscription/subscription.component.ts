@@ -2,6 +2,10 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { MatSlideToggleChange } from '@angular/material/slide-toggle'
+import { Injectable } from '@angular/core';
+import { element } from 'protractor';
+import { ISubscription } from '../interfaces/subscription'
+import { Apollo, gql } from 'apollo-angular';
 
 
 interface Monthly {
@@ -21,35 +25,51 @@ interface Annual {
     templateUrl: './subscription.component.html',
     styleUrls: ['./subscription.component.sass']
 })
+
 export class SubscriptionComponent implements OnInit {
 
-    openDialog (): void {
-        this.dialog.open(payment, {})
-    }
+  subscriptions: ISubscription[] = []
 
-    test () {
-        const classique = document.getElementById('classique')
-        const prime = document.getElementById('prime')
-        const premium = document.getElementById('premium')
-        const mostPremium = document.getElementById('premium+')
+  openDialog (subscription: ISubscription): void {
+      this.dialog.open(payment, { data: subscription})
+  }
 
-        const test = classique?.innerText
+  // eslint-disable-next-line no-useless-constructor
+  constructor(
+    public dialog: MatDialog,
+    private apollo: Apollo
+  ) {}
 
-        const test2 = []
+  getSubscriptions (id?: string): void {
 
-        test2.push(test)
+      const variables = {
+          id
+      }
 
-        console.log(test2);
+      this.apollo.watchQuery({
+          query: gql`
+          query subscriptions($id: String) {
+            subscriptions(id: $id) {
+                id
+                name
+                price
+                storage
+              }
+            }
+            `,
 
+          variables
+      }).
+          valueChanges.
+          subscribe((result: any) => {
+              const {subscriptions} = result.data
+              this.subscriptions = subscriptions
+          })
+  }
 
-    }
-
-    constructor (public dialog: MatDialog) {
-
-    }
-
-    ngOnInit (): void {
-    }
+  ngOnInit (): void {
+      this.getSubscriptions()
+  }
 
 }
 
@@ -61,8 +81,10 @@ export class SubscriptionComponent implements OnInit {
 
 export class payment {
 
-
   activated = false
+  subscriptions: any;
+  apollo: any;
+
 
 
   // eslint-disable-next-line no-useless-constructor
@@ -70,7 +92,7 @@ export class payment {
     private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<payment>,
     public dialog: MatDialog,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public subscription: any
   ) {
       this.dialogRef.backdropClick().subscribe(() => {
           console.log('background')

@@ -2,66 +2,28 @@
     <div class="flex justify-center">
         <div class="flex-col text-center">
             <h1>Choisissez votre abonnement</h1>
-            <p>Pour en profiter un peu plus, choisissez votre abonnement en fonction de vos besoins.</p>
+            <p>Choisissez votre abonnement en fonction de vos besoins.</p>
         </div>
     </div>
-    <div class="flex justify-around border mt-12 mx-52 bg-dark2">
-        <div id="classique" class="w-auto border-r flex justify-center">
+    <div class="flex justify-center mt-12">
+
+        <div *ngFor="let subscription of subscriptions" class="bg-dark2 border grid grid-flow-row w-auto border-r justify-center">
             <div class="flex-col text-center my-4">
-                <h2>Classique</h2>
-                <div class="my-4">4,99 / Mois</div>
+                <div class="sub mt-2 mb-7">{{ subscription.name }}</div>
+                <!-- <div class="m-4">{{ subscription.price }} € / Mois</div> -->
+                <p class="price">{{ subscription.price }} € </p>
+            <p>/ Mois </p>
                 <ul class="mb-6">
-                    <li>300 Go de stockage</li>
+                    <li>{{ subscription.storage }} de stockage</li>
                     <li>Stocker vos fichiers en toute sécurité</li>
                     <li>Créez des dossiers afin d'organiser vos fichiers</li>
                 </ul>
                 
-                <button mat-raised-button type="submit" (click)="test()" class="border">
-                    Classique
-                  </button>
-            </div>
-        </div>
-        <div id="prime" class="w-auto border-r flex justify-center">
-            <div class="flex-col text-center my-4">
-                <h2>Prime</h2>
-                <div class="my-4">9,99 / Mois</div>
-                <ul class="mb-6">
-                    <li>2 To de stockage</li>
-                    <li>Stocker vos fichiers en toute sécurité</li>
-                    <li>Créez des dossiers afin d'organiser vos fichiers</li>
-                </ul>
-                <button mat-raised-button type="submit" (click)="openDialog()" class="border">
-                    Prime
+                <button id="{{ subscription.id }}" mat-raised-button type="submit" (click)="openDialog( subscription )" class="border">
+                    {{ subscription.name }}
                 </button>
             </div>
         </div>
-        <div id="premium" class="w-auto border-r flex justify-center">
-            <div class="flex-col text-center my-4">
-                <h2>Premium</h2>
-                <div class="my-4">19,99 / Mois</div>
-                <ul class="mb-6">
-                    <li>5 To de stockage</li>
-                    <li>Stocker vos fichiers en toute sécurité</li>
-                    <li>Créez des dossiers afin d'organiser vos fichiers</li>
-                </ul>
-                <button mat-raised-button type="submit" (click)="openDialog()" class="border">
-                    Premium
-                </button>
-            </div>
-        </div>
-        <div id="premium+" class="w-auto flex justify-center">
-            <div class="flex-col text-center my-4">
-                <h2>Premium +</h2>
-                <div class="my-4">29,99 / Mois</div>
-                <ul class="mb-6">
-                    <li>12 Go de stockage</li>
-                    <li>Stocker vos fichiers en toute sécurité</li>
-                    <li>Créez des dossiers afin d'organiser vos fichiers</li>
-                </ul>
-                <button mat-raised-button type="submit" (click)="openDialog()" class="border">
-                    Premium +
-                </button>
-            </div>
-        </div>
+        
     </div>
 </div>

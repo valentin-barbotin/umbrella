@@ -100,7 +100,8 @@ import { payment, SubscriptionComponent } from './subscription/subscription.comp
         createFolderComponent,
         delAccount,
         dualAuth,
-        SubscriptionComponent
+        SubscriptionComponent,
+        payment
     ],
     imports: [
         BrowserModule,
