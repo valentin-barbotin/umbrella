@@ -2,7 +2,11 @@
   <div class="border bg-dark1 mx-auto w-2/3 mt-24 rounded-lg text-white">
     <div class="flex justify-around mx-4 mt-4">
       <div>
-        <mat-progress-spinner [color]="'#505050'" [mode]="'determinate'" [value]="50">
+        <mat-progress-spinner
+        [color]="'#505050'"
+        [mode]="'determinate'"
+        value="{{ FileService.calcUsedStorage() }}"
+        >
         </mat-progress-spinner>
         <h3>Stockage : {{ FileService.sizeTotal | bytesConverter }}</h3>
       </div>
