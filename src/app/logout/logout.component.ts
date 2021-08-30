@@ -24,9 +24,6 @@ export class LogoutComponent implements OnInit {
             return
         }
 
-        localStorage.removeItem('user')
-        this.cookieService.delete('connect.sid')
-
         this.http.get(
             `${environment.api}users/logout`,
             {
@@ -45,5 +42,6 @@ export class LogoutComponent implements OnInit {
                 console.log(error)
             }
         )
+        localStorage.removeItem('user')
     }
 }
