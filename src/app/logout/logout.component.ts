@@ -34,8 +34,6 @@ export class LogoutComponent implements OnInit {
         ).subscribe(
             (response) => {
                 console.log(response)
-                localStorage.removeItem('user')
-                this.cookieService.delete('connect.sid')
                 if (response) {
                     this.Router.navigate(['/'])
                 }
@@ -44,5 +42,6 @@ export class LogoutComponent implements OnInit {
                 console.log(error)
             }
         )
+        localStorage.removeItem('user')
     }
 }
