@@ -38,7 +38,7 @@ export class resetPassword {
             (response) => {
                 const msg = response === 'User not found'
                     ? response
-                    : `New password is ${response}`
+                    : `An email containing the new password was sended on the mailbox of this account`
 
                 this.snackBar.open(msg, 'OK', {
                     duration: 10000
