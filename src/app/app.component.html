@@ -1,32 +1,50 @@
-<!-- <div class="inset-0 bg-black text-white p-5">
-    <div class="justify-between justify-arround flex mx-7 place-items-center">
-        <div class="flex place-items-center">
-            <a href="/"><img src="/assets/images/logopa.png" width="50px" height="50px"></a>
-            <h3 style="margin-bottom: 0%;"><a class="mx-8 my-0 py-3 border-r-2"></a></h3>
-            <div>
-                <a class="mr-2" routerLink="/files">Mes Fichiers</a>
-                <a class="mx-2" routerLink="/login" >Login</a>
-                <a class="mx-2" routerLink="/register">Register</a>
-                <a class="mx-2" routerLink="/dashboard">Dashboard</a>
+<div *ngIf="router.url === '/'" >
+    <div class="inset-0 bg-dark2 text-white p-5">
+        <div class="justify-between justify-arround flex mx-7 place-items-center">
+            <div class="flex place-items-center">
+                <a href="/"><img src="/assets/images/logopa.png" width="50px" height="50px"></a>
+                <h3 style="margin-bottom: 0%;"><a class="mx-8 my-0 py-3 border-r-2"></a></h3>
+                <div>
+                    <a *ngIf="UserService.User" class="mr-2" routerLink="/dashboard/files">Mes Fichiers</a>
+                    <a *ngIf="UserService.User" class="mx-2" routerLink="/dashboard">Dashboard</a>
+                    <a *ngIf="UserService.User" class="mr-2" routerLink="/logout">Logout</a>
+                    <a *ngIf="UserService.User === null" class="mx-2" routerLink="/login" >Login</a>
+                    <a *ngIf="UserService.User === null" class="mx-2" routerLink="/register">Register</a>
+                </div>
             </div>
-        </div>
 
-        <div class="flex">
-            <div>
-                <a><mat-icon class="mx-8 mt-2.5" style="font-size: 35px;">notifications</mat-icon></a>
-            </div>
-            <div>
-                <a><mat-icon style="font-size: 50px;  ">lens</mat-icon></a>
-            </div>
+            <!-- <div class="flex">
+                <div>
+                    <a><mat-icon class="mx-8 mt-2.5" style="font-size: 35px;">notifications</mat-icon></a>
+                </div>
+                <div>
+                    <a><mat-icon style="font-size: 50px;  ">lens</mat-icon></a>
+                </div>
+            </div> -->
         </div>
     </div>
-</div> -->
+    <div class="text-white flex justify-center mt-20">
+        <div class="text-center mx-44">
+            <h1 class="title">Bienvenue sur Scrypteur</h1>
+            <br>
+            <p class="subTitle">Service de stockage de fichier en ligne</p>
+            <br>
+            <br>
+            <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                Culpa molestiae consequatur vitae neque omnis sunt laborum sed magni recusandae
+                eum alias praesentium odit officia accusamus et, labore harum quas incidunt.
+            </p>
+        </div>
 
-<div class="text-white" *ngIf="router.url === '/'" >
+    </div>
+</div>  
+
+<!-- <div class="text-white" *ngIf="router.url === '/'" >
     <a class="mr-2" routerLink="/logout">Mes Fichiers</a>
     <a class="mx-2" routerLink="/login" >Login</a>
     <a class="mx-2" routerLink="/register">Register</a>
     <a class="mx-2" routerLink="/dashboard">Dashboard</a>
     <a class="mx-2" routerLink="/logout">Logout</a>
-</div>
+</div> -->
 <router-outlet></router-outlet>

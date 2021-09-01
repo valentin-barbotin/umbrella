@@ -6,6 +6,7 @@ import { FileService } from '../services/file.service'
     styleUrls: ['./settings-subscription.component.sass']
 })
 export class SettingsSubscriptionComponent implements OnInit {
+    
     // eslint-disable-next-line no-useless-constructor
     constructor (public FileService: FileService) { }
 
