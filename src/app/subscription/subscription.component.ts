@@ -7,7 +7,6 @@ import { element } from 'protractor';
 import { ISubscription } from '../interfaces/subscription'
 import { Apollo, gql } from 'apollo-angular';
 import { User } from '../user'
-import { Subscription } from 'rxjs';
 
 
 interface Monthly {
