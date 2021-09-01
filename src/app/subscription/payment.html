@@ -7,7 +7,7 @@
     </div>
 </div>
 <div class="flex justify-center mt-6">
-    <button id="{{ subscription.id }}" mat-raised-button type="submit" class="border">
+    <button id="{{ subscription.id }}" mat-raised-button type="submit" (click)="changeSubscription()" class="border">
         Payer
     </button>
 </div>

@@ -6,6 +6,8 @@ import { Injectable } from '@angular/core';
 import { element } from 'protractor';
 import { ISubscription } from '../interfaces/subscription'
 import { Apollo, gql } from 'apollo-angular';
+import { User } from '../user'
+import { Subscription } from 'rxjs';
 
 
 interface Monthly {
@@ -82,8 +84,52 @@ export class SubscriptionComponent implements OnInit {
 export class payment {
 
   activated = false
-  subscriptions: any;
-  apollo: any;
+  subscriptions = ''
+
+  newSub = this.subscription.name
+
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  changeSubscription () {
+      const userStorage = localStorage.getItem('user')
+
+      if (!userStorage) return
+
+      const user = JSON.parse(userStorage) as User
+      if (!user) return
+
+      const query = gql`
+        mutation editSubscription($newSub: String!, $username: String!) {
+          edit: editSubscription(newSub: $newSub, username: $username) 
+        }`
+
+      this.apollo.mutate({
+          mutation: query,
+          variables: {
+              newSub: this.newSub,
+              username: user.username
+          }
+      }).subscribe(
+          (response: any) => {
+              let msg = "Echec"
+              console.log(response);
+
+              if (response.data.edit) {
+                  msg = "Subscription modifiée"
+                  user.sub = this.newSub
+                  localStorage.setItem('user', JSON.stringify(user))
+              }
+
+              this.snackBar.open(msg, 'OK', {
+                  duration: 5000
+              })
+          },
+          (error: any) => {
+              console.log(error)
+          }
+      )
+      console.log(user.sub);
+
+  }
 
 
 
@@ -92,6 +138,7 @@ export class payment {
     private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<payment>,
     public dialog: MatDialog,
+    private apollo: Apollo,
     @Inject(MAT_DIALOG_DATA) public subscription: any
   ) {
       this.dialogRef.backdropClick().subscribe(() => {

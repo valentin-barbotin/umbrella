@@ -110,6 +110,7 @@ export class LoginComponent implements OnInit {
                     username
                     email
                     mfa
+                    sub
                 }
             }
         `
