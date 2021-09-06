@@ -32,7 +32,18 @@
       <app-settings-account *ngSwitchCase="'account'"></app-settings-account>
       <app-settings-subscription *ngSwitchCase="'abonnement'"></app-settings-subscription>
       <app-settings-security *ngSwitchCase="'security'"></app-settings-security>
-      <div class="text-white" *ngSwitchDefault>Aucune selection</div>
+      <div class="text-white" *ngSwitchDefault>
+        <div class="flex justify-center mt-9">
+          <div class="flex-col text-center">
+            <h1 class="title">Aucun onglet selectionné</h1>
+            <p>
+              Ici vous pouvez modifier vos paramètres de compte, préférences mais aussi prendre un abonnement 
+              afin d'obtenir plus d'espace de stockage.
+            </p>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 </div>
