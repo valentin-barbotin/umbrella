@@ -10,11 +10,6 @@
         </mat-progress-spinner>
         <h3>Stockage : {{ FileService.sizeTotal | bytesConverter }}</h3>
       </div>
-      <div>
-        <mat-progress-spinner [color]="'#505050'" [mode]="'determinate'" [value]="50">
-        </mat-progress-spinner>
-        <h3>Taille = {{ 261565161 | bytesConverter }}</h3>
-      </div>
       <div class="mt-12">
         <button mat-raised-button type="submit" [routerLink]="['/dashboard/subscription']" routerLinkActive="router-link-active" class="border">
           Prendre un abonnement
