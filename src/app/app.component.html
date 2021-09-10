@@ -8,19 +8,10 @@
                     <a *ngIf="UserService.User" class="mr-2" routerLink="/dashboard/files">Mes Fichiers</a>
                     <a *ngIf="UserService.User" class="mx-2" routerLink="/dashboard">Dashboard</a>
                     <a *ngIf="UserService.User" class="mr-2" routerLink="/logout">Logout</a>
-                    <a *ngIf="UserService.User === null" class="mx-2" routerLink="/login" >Login</a>
-                    <a *ngIf="UserService.User === null" class="mx-2" routerLink="/register">Register</a>
+                    <a *ngIf="!UserService.User" class="mx-2" routerLink="/login" >Login</a>
+                    <a *ngIf="!UserService.User" class="mx-2" routerLink="/register">Register</a>
                 </div>
             </div>
-
-            <!-- <div class="flex">
-                <div>
-                    <a><mat-icon class="mx-8 mt-2.5" style="font-size: 35px;">notifications</mat-icon></a>
-                </div>
-                <div>
-                    <a><mat-icon style="font-size: 50px;  ">lens</mat-icon></a>
-                </div>
-            </div> -->
         </div>
     </div>
     <div class="text-white flex justify-center mt-20">
@@ -40,11 +31,4 @@
     </div>
 </div>  
 
-<!-- <div class="text-white" *ngIf="router.url === '/'" >
-    <a class="mr-2" routerLink="/logout">Mes Fichiers</a>
-    <a class="mx-2" routerLink="/login" >Login</a>
-    <a class="mx-2" routerLink="/register">Register</a>
-    <a class="mx-2" routerLink="/dashboard">Dashboard</a>
-    <a class="mx-2" routerLink="/logout">Logout</a>
-</div> -->
 <router-outlet></router-outlet>

@@ -1,5 +1,4 @@
-import { JsonpClientBackend } from '@angular/common/http'
-import { Component, OnInit } from '@angular/core'
+import { Component } from '@angular/core'
 import { FileService } from '../services/file.service'
 import { UserService } from '../services/user.service'
 @Component({
@@ -7,21 +6,18 @@ import { UserService } from '../services/user.service'
     templateUrl: './settings-subscription.component.html',
     styleUrls: ['./settings-subscription.component.sass']
 })
-export class SettingsSubscriptionComponent implements OnInit {
+export class SettingsSubscriptionComponent {
 
     userSub = ''
 
-    checkSub() {
-        const user = localStorage.getItem('user')
-        if (!user) return
-        const sub = JSON.parse(user)
-        this.userSub = sub.sub
-    }
-
     // eslint-disable-next-line no-useless-constructor
-    constructor (public FileService: FileService) { }
-
-    ngOnInit (): void {
-        this.checkSub()
+    constructor (
+        public FileService: FileService,
+        private UserService: UserService
+    ) {
+        const user = UserService.User
+        if (user) {
+            this.userSub = user.sub
+        }
     }
 }
