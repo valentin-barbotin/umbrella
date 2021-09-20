@@ -30,8 +30,8 @@ jobs:
 
     - name: 🕹️ Git Version
       id: version
-      uses: codacy/git-version@2.2.0
-        
+      uses: codacy/git-version@2.5.3
+
     - name: Azure Container Registry Login
       uses: Azure/docker-login@v1
       with:
