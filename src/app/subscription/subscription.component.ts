@@ -7,6 +7,7 @@ import { element } from 'protractor';
 import { ISubscription } from '../interfaces/subscription'
 import { Apollo, gql } from 'apollo-angular';
 import { User } from '../user'
+import { Router } from '@angular/router';
 
 
 interface Monthly {
@@ -116,14 +117,18 @@ export class payment {
                   msg = "Subscription modifiée"
                   user.sub = this.newSub
                   localStorage.setItem('user', JSON.stringify(user))
+                  this.Router.navigate(['/successPayment'])
+                  this.dialogRef.close(this.activated)
               }
 
               this.snackBar.open(msg, 'OK', {
-                  duration: 5000
+                  duration: 3000
               })
           },
           (error: any) => {
               console.log(error)
+              this.Router.navigate(['/failedPayment'])
+              this.dialogRef.close(this.activated)
           }
       )
       console.log(user.sub);
@@ -138,6 +143,7 @@ export class payment {
     public dialogRef: MatDialogRef<payment>,
     public dialog: MatDialog,
     private apollo: Apollo,
+    public Router: Router,
     @Inject(MAT_DIALOG_DATA) public subscription: any
   ) {
       this.dialogRef.backdropClick().subscribe(() => {

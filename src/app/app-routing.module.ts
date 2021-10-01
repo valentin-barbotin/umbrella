@@ -9,6 +9,7 @@ import { LogoutComponent } from './logout/logout.component'
 import { RegisterComponent } from './register/register.component'
 import { SettingsComponent } from './settings/settings.component'
 import { SubscriptionComponent } from './subscription/subscription.component'
+import { FailedPaymentComponent, SuccessPaymentComponent } from './success-payment/success-payment.component'
 
 const routes: Routes = [
     {
@@ -32,7 +33,11 @@ const routes: Routes = [
     { path: 'files',
         component: FilesComponent },
     { path: 'register',
-        component: RegisterComponent }
+        component: RegisterComponent },
+    { path: 'successPayment',
+        component: SuccessPaymentComponent },
+    { path: 'failedPayment',
+        component: FailedPaymentComponent }
 ]
 
 @NgModule({

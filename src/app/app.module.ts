@@ -74,6 +74,7 @@ import { dualAuth, SettingsSecurityComponent } from './settings-security/setting
 import { SettingsSubscriptionComponent } from './settings-subscription/settings-subscription.component';
 import { QRCodeModule } from 'angularx-qrcode';
 import { payment, SubscriptionComponent } from './subscription/subscription.component';
+import { SuccessPaymentComponent } from './success-payment/success-payment.component';
 
 /*
  * Export function HttpLoaderFactory(http: HttpClient) {
@@ -101,7 +102,8 @@ import { payment, SubscriptionComponent } from './subscription/subscription.comp
         delAccount,
         dualAuth,
         SubscriptionComponent,
-        payment
+        payment,
+        SuccessPaymentComponent
     ],
     imports: [
         BrowserModule,
