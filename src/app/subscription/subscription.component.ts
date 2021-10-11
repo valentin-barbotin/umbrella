@@ -8,6 +8,7 @@ import { ISubscription } from '../interfaces/subscription'
 import { Apollo, gql } from 'apollo-angular';
 import { User } from '../user'
 import { Router } from '@angular/router';
+import { UserService } from '../services/user.service';
 
 
 interface Monthly {
@@ -86,15 +87,11 @@ export class payment {
   activated = false
   subscriptions = ''
 
-  newSub = this.subscription.name
+  newSub = this.subscription.id
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   changeSubscription () {
-      const userStorage = localStorage.getItem('user')
-
-      if (!userStorage) return
-
-      const user = JSON.parse(userStorage) as User
+      const user = this.UserService.User
       if (!user) return
 
       const query = gql`
@@ -110,20 +107,9 @@ export class payment {
           }
       }).subscribe(
           (response: any) => {
-              let msg = "Echec"
-              console.log(response);
-
-              if (response.data.edit) {
-                  msg = "Subscription modifiée"
-                  user.sub = this.newSub
-                  localStorage.setItem('user', JSON.stringify(user))
-                  this.Router.navigate(['/successPayment'])
-                  this.dialogRef.close(this.activated)
+              if (response.data.edit !== "" && response.data.edit) {
+                  window.location.href = response.data.edit
               }
-
-              this.snackBar.open(msg, 'OK', {
-                  duration: 3000
-              })
           },
           (error: any) => {
               console.log(error)
@@ -144,7 +130,8 @@ export class payment {
     public dialog: MatDialog,
     private apollo: Apollo,
     public Router: Router,
-    @Inject(MAT_DIALOG_DATA) public subscription: any
+    private UserService: UserService,
+    @Inject(MAT_DIALOG_DATA) public subscription: ISubscription
   ) {
       this.dialogRef.backdropClick().subscribe(() => {
           console.log('background')
