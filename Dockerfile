@@ -7,7 +7,8 @@ RUN npm i -g @angular/cli
 RUN ng build --configuration=production
 
 FROM nginx
-WORKDIR /usr/share/nginx/html
+WORKDIR /usr/src/app
 COPY --from=angular /usr/src/app/dist/umbrella ./
+COPY ./docker/nginx/default.conf /etc/nginx/conf.d/
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
