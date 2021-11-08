@@ -5,6 +5,8 @@ import { Apollo, gql } from 'apollo-angular'
 import { User } from '../user'
 import { FileService } from '../services/file.service'
 import { MatDialogRef, MatDialog } from '@angular/material/dialog'
+import { Router } from '@angular/router'
+
 @Component({
     selector: 'app-settings-account',
     templateUrl: './settings-account.component.html',
@@ -119,35 +121,42 @@ export class delAccount {
     }`
       console.log(user.username)
 
-      this.apollo.mutate({
+      if (username === user.username) {
+        this.apollo.mutate({
           mutation: query,
           variables: {
-              myUsername: username,
-              username: user.username
+            myUsername: username,
+            username: user.username
           }
-      }).subscribe(
+        }).subscribe(
           (response: any) => {
-              let msg = "Echec lors de la supprésion du compte, le nom d'utilisateur ne correspond pas"
-
-              if (response.data.edit) {
-                  msg = 'Le compte a bien été supprimé'
-                  localStorage.setItem('user', JSON.stringify(user))
-              }
-
-              this.snackBar.open(msg, 'OK', {
-                  duration: 5000
-              })
+            let msg = "Echec lors de la supprésion du compte, le nom d'utilisateur ne correspond pas"
+    
+            if (response.data.edit) {
+              msg = 'Le compte a bien été supprimé'
+              localStorage.setItem('user', JSON.stringify(user))
+            }
+    
+            this.snackBar.open(msg, 'OK', {
+              duration: 5000
+            })
+            this.Router.navigate(['/logout'])
           },
           (error) => {
-              console.log(error)
+            console.log(error)
           }
-      )
-  }
+        )} else {
+          this.snackBar.open("Le nom d'utilisateur n'est pas le bon", 'OK', {
+            duration: 5000
+          })
+        }
+      }
 
   // eslint-disable-next-line no-useless-constructor
   constructor (
     private apollo: Apollo,
     private snackBar: MatSnackBar,
+    private Router: Router,
     public dialogRef: MatDialogRef<delAccount>
   ) {}
 
