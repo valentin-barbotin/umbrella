@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { CookieService } from 'ngx-cookie-service'
 import { environment } from '../../environments/environment'
+import { MatSnackBar } from '@angular/material/snack-bar'
+
 
 @Component({
     selector: 'app-logout',
@@ -14,7 +16,9 @@ export class LogoutComponent implements OnInit {
     constructor (
     private Router: Router,
     private http: HttpClient,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private snackBar: MatSnackBar,
+
     ) { }
 
     ngOnInit (): void {
@@ -43,5 +47,11 @@ export class LogoutComponent implements OnInit {
             }
         )
         localStorage.removeItem('user')
+        this.snackBar.open("You're disconnected", 'OK', {
+            duration: 5000
+          })
+          setTimeout(() => {
+            this.Router.navigate(['/'])
+        })
     }
 }
